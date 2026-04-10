@@ -1,0 +1,80 @@
+name: Build offline bundle
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master, main ]
+
+jobs:
+  offline-bundle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    env:
+      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-home
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Show tool versions
+        run: |
+          mkdir -p offline-bundle/env
+          echo "JAVA_HOME=$JAVA_HOME" | tee offline-bundle/env/java-home.txt
+          java -version 2>&1 | tee offline-bundle/env/java-version.txt
+          ./gradlew --version | tee offline-bundle/env/gradle-version.txt
+          uname -a | tee offline-bundle/env/uname.txt
+
+      - name: Online build and fetch dependencies
+        run: |
+          ./gradlew --no-daemon build --refresh-dependencies
+
+      - name: Verify offline build
+        run: |
+          ./gradlew --no-daemon --offline build
+
+      - name: Collect environment snapshot
+        run: |
+          env | sort > offline-bundle/env/environment.txt
+          ls -la > offline-bundle/env/workspace-root.txt
+          find . -maxdepth 2 -type f | sort > offline-bundle/env/files-maxdepth2.txt || true
+
+      - name: Pack project
+        run: |
+          mkdir -p offline-bundle
+          tar \
+            --exclude-vcs \
+            --exclude='./offline-bundle' \
+            --exclude='./.git' \
+            -czf offline-bundle/project.tar.gz \
+            .
+
+      - name: Pack Gradle user home
+        run: |
+          tar -C "$GRADLE_USER_HOME" -czf offline-bundle/gradle-home.tar.gz .
+
+      # 想把 JDK 也一起打下来，就把这一步取消注释。
+      # 体积会明显变大。
+      #
+      # - name: Pack JDK
+      #   run: |
+      #     tar -C "$(dirname "$JAVA_HOME")" -czf offline-bundle/jdk.tar.gz "$(basename "$JAVA_HOME")"
+
+      - name: Upload offline bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-bundle
+          path: offline-bundle/*
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
