@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Java 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '25'
@@ -27,17 +27,22 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Show tool versions
+      - name: Prepare bundle directories
         run: |
           mkdir -p offline-bundle/env
+          mkdir -p offline-bundle/gradle-sizes
+          mkdir -p offline-bundle/gradle-parts
+
+      - name: Record tool versions
+        run: |
           echo "JAVA_HOME=$JAVA_HOME" | tee offline-bundle/env/java-home.txt
           java -version 2>&1 | tee offline-bundle/env/java-version.txt
           ./gradlew --version | tee offline-bundle/env/gradle-version.txt
           uname -a | tee offline-bundle/env/uname.txt
 
-      - name: Online build and fetch dependencies
+      - name: Online warm-up build
         run: |
-          ./gradlew --no-daemon build --refresh-dependencies
+          ./gradlew --no-daemon setupDecompWorkspace build --refresh-dependencies
 
       - name: Verify offline build
         run: |
@@ -47,34 +52,59 @@ jobs:
         run: |
           env | sort > offline-bundle/env/environment.txt
           ls -la > offline-bundle/env/workspace-root.txt
-          find . -maxdepth 2 -type f | sort > offline-bundle/env/files-maxdepth2.txt || true
+          find . -maxdepth 3 -type f | sort > offline-bundle/env/files-maxdepth3.txt || true
 
-      - name: Pack project
+      - name: Inspect Gradle user home size
         run: |
-          mkdir -p offline-bundle
+          du -sh "$GRADLE_USER_HOME" > offline-bundle/gradle-sizes/total.txt
+          du -sh "$GRADLE_USER_HOME"/* 2>/dev/null | sort -h > offline-bundle/gradle-sizes/top-level.txt || true
+          du -h -d 3 "$GRADLE_USER_HOME" 2>/dev/null | sort -h > offline-bundle/gradle-sizes/du-depth3.txt || true
+
+      - name: Pack project source
+        run: |
           tar \
             --exclude-vcs \
-            --exclude='./offline-bundle' \
             --exclude='./.git' \
-            -czf offline-bundle/project.tar.gz \
+            --exclude='./.gradle-home' \
+            --exclude='./offline-bundle' \
+            --exclude='./build' \
+            -czf offline-bundle/project-src.tar.gz \
             .
 
-      - name: Pack Gradle user home
+      - name: Pack project build output
         run: |
-          tar -C "$GRADLE_USER_HOME" -czf offline-bundle/gradle-home.tar.gz .
+          if [ -d build ]; then
+            tar -czf offline-bundle/project-build.tar.gz build
+          fi
 
-      # 想把 JDK 也一起打下来，就把这一步取消注释。
-      # 体积会明显变大。
-      #
-      # - name: Pack JDK
-      #   run: |
-      #     tar -C "$(dirname "$JAVA_HOME")" -czf offline-bundle/jdk.tar.gz "$(basename "$JAVA_HOME")"
+      - name: Pack Gradle caches
+        run: |
+          if [ -d "$GRADLE_USER_HOME/caches" ]; then
+            tar -C "$GRADLE_USER_HOME" -czf offline-bundle/gradle-parts/gradle-caches.tar.gz caches
+          fi
+
+      - name: Pack Gradle wrapper distributions
+        run: |
+          if [ -d "$GRADLE_USER_HOME/wrapper" ]; then
+            tar -C "$GRADLE_USER_HOME" -czf offline-bundle/gradle-parts/gradle-wrapper.tar.gz wrapper
+          fi
+
+      - name: Pack downloaded JDKs
+        run: |
+          if [ -d "$GRADLE_USER_HOME/jdks" ]; then
+            tar -C "$GRADLE_USER_HOME" -czf offline-bundle/gradle-parts/gradle-jdks.tar.gz jdks
+          fi
 
       - name: Upload offline bundle
         uses: actions/upload-artifact@v4
         with:
           name: offline-bundle
-          path: offline-bundle/*
+          path: |
+            offline-bundle/project-src.tar.gz
+            offline-bundle/project-build.tar.gz
+            offline-bundle/gradle-parts/*
+            offline-bundle/gradle-sizes/*
+            offline-bundle/env/*
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
