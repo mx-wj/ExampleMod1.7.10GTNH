@@ -1325,7 +1325,8 @@ IBossDisplayData {
         if (part != null && part.worldObj != null && !this.getWaiting()) {
             double d0 = (part.boundingBox.minX + part.boundingBox.maxX) / 2.0;
             double d1 = (part.boundingBox.minZ + part.boundingBox.maxZ) / 2.0;
-            for (Entity entity : p_70970_1_) {
+            for (Object entityObj : p_70970_1_) {
+                Entity entity = (Entity)entityObj;
                 boolean leg;
                 boolean bl = leg = part.field_146032_b == "rightleg" || part.field_146032_b == "leftleg" || part.field_146032_b == "leg1" || part.field_146032_b == "leg2" || part.field_146032_b == "leg3" || part.field_146032_b == "leg4";
                 if (!this.canAttackClass(entity.getClass()) || entity == null || entity instanceof EntityWebShot || entity instanceof EntitySkeletonTitanGiantArrow || entity instanceof EntityWitherSkull || entity instanceof EntityTitanFireball || entity instanceof EntityProtoBall || entity instanceof EntityLightningBall || entity instanceof EntityTitanPart || entity instanceof EntityHarcadiumArrow || entity instanceof EntityTitan || entity instanceof EntityTitanSpirit) continue;

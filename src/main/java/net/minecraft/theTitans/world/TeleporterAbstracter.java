@@ -98,7 +98,7 @@ extends Teleporter {
         }
         if (d3 >= 0.0) {
             if (flag) {
-                this.destinationCoordinateCache.add(j1, (Object)new Teleporter.PortalPosition((Teleporter)this, i, j, k, this.worldServerInstance.getTotalWorldTime()));
+                this.destinationCoordinateCache.add(j1, (Object)this.new PortalPosition(i, j, k, this.worldServerInstance.getTotalWorldTime()));
                 this.destinationCoordinateKeys.add(j1);
             }
             double d8 = (double)i + 0.5;

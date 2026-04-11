@@ -285,9 +285,9 @@ IEntityMultiPartTitan {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)-1);
-        this.dataWatcher.addObject(17, (Object)0);
-        this.dataWatcher.addObject(18, (Object)0);
+        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)-1));
+        this.dataWatcher.addObject(17, (Object)Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(18, (Object)Byte.valueOf((byte)0));
     }
 
     @Override
@@ -748,7 +748,7 @@ IEntityMultiPartTitan {
                     this.worldObj.setBlock((int)entitychicken.posX, (int)entitychicken.posY, (int)entitychicken.posZ, Blocks.dirt);
                 }
                 if (this.rand.nextInt(100) == 0 || this.getPowered()) {
-                    entitychicken.getDataWatcher().updateObject(17, (Object)1);
+                    entitychicken.getDataWatcher().updateObject(17, (Object)Byte.valueOf((byte)1));
                 }
             }
             if (this.numPriests < this.getPriestCap() && (this.rand.nextInt(this.getMinionSpawnRate() * 2) == 0 || this.getInvulTime() > 1) && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
@@ -768,7 +768,7 @@ IEntityMultiPartTitan {
                     this.worldObj.setBlock((int)entitychicken.posX, (int)entitychicken.posY, (int)entitychicken.posZ, Blocks.dirt);
                 }
                 if (this.rand.nextInt(100) == 0 || this.getPowered()) {
-                    entitychicken.getDataWatcher().updateObject(17, (Object)1);
+                    entitychicken.getDataWatcher().updateObject(17, (Object)Byte.valueOf((byte)1));
                 }
             }
             if (this.numZealots < this.getZealotCap() && (this.rand.nextInt(this.getMinionSpawnRate() * 4) == 0 || this.getInvulTime() > 1) && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
@@ -788,7 +788,7 @@ IEntityMultiPartTitan {
                     this.worldObj.setBlock((int)entitychicken.posX, (int)entitychicken.posY, (int)entitychicken.posZ, Blocks.dirt);
                 }
                 if (this.rand.nextInt(100) == 0 || this.getPowered()) {
-                    entitychicken.getDataWatcher().updateObject(17, (Object)1);
+                    entitychicken.getDataWatcher().updateObject(17, (Object)Byte.valueOf((byte)1));
                 }
             }
             if (this.numBishop < this.getBishopCap() && (this.rand.nextInt(this.getMinionSpawnRate() * 8) == 0 || this.getInvulTime() > 1) && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
@@ -808,7 +808,7 @@ IEntityMultiPartTitan {
                     this.worldObj.setBlock((int)entitychicken.posX, (int)entitychicken.posY, (int)entitychicken.posZ, Blocks.dirt);
                 }
                 if (this.rand.nextInt(100) == 0 || this.getPowered()) {
-                    entitychicken.getDataWatcher().updateObject(17, (Object)1);
+                    entitychicken.getDataWatcher().updateObject(17, (Object)Byte.valueOf((byte)1));
                 }
             }
             if (this.numTemplar < this.getTemplarCap() && (this.rand.nextInt(this.getMinionSpawnRate() * 16) == 0 || this.getInvulTime() > 1) && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
@@ -828,7 +828,7 @@ IEntityMultiPartTitan {
                     this.worldObj.setBlock((int)entitychicken.posX, (int)entitychicken.posY, (int)entitychicken.posZ, Blocks.dirt);
                 }
                 if (this.rand.nextInt(100) == 0 || this.getPowered()) {
-                    entitychicken.getDataWatcher().updateObject(17, (Object)1);
+                    entitychicken.getDataWatcher().updateObject(17, (Object)Byte.valueOf((byte)1));
                 }
             }
         }
@@ -888,7 +888,7 @@ IEntityMultiPartTitan {
     }
 
     public void setPowered(boolean powered) {
-        this.dataWatcher.updateObject(17, (Object)(powered ? (byte)1 : 0));
+        this.dataWatcher.updateObject(17, (Object)Byte.valueOf((byte)(powered ? 1 : 0)));
     }
 
     public boolean getPowered() {
@@ -966,7 +966,7 @@ IEntityMultiPartTitan {
     }
 
     public void setCreeperState(int p_70829_1_) {
-        this.dataWatcher.updateObject(16, (Object)((byte)p_70829_1_));
+        this.dataWatcher.updateObject(16, (Object)Byte.valueOf((byte)p_70829_1_));
     }
 
     public void onStruckByLightning(EntityLightningBolt lightningBolt) {
@@ -1035,7 +1035,7 @@ IEntityMultiPartTitan {
     }
 
     public void func_146079_cb() {
-        this.dataWatcher.updateObject(18, (Object)1);
+        this.dataWatcher.updateObject(18, (Object)Byte.valueOf((byte)1));
     }
 
     public void func_175493_co() {

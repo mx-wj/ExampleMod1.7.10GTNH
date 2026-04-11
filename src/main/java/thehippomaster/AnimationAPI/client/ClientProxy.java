@@ -29,7 +29,7 @@ extends CommonProxy {
 
     @Override
     public void initTimer() {
-        this.mcTimer = (Timer)ReflectionHelper.getPrivateValue(Minecraft.class, (Object)Minecraft.getMinecraft(), (String[])AnimationAPI.fTimer);
+        this.mcTimer = (Timer)ReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), AnimationAPI.fTimer);
     }
 
     @Override
