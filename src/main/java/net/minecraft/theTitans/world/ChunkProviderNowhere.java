@@ -61,6 +61,8 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.NoiseGenerator;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 import net.minecraft.world.gen.feature.WorldGenDungeons;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
 import net.minecraft.world.gen.structure.MapGenNetherBridge;
@@ -221,6 +223,8 @@ implements IChunkProvider {
     }
 
     public void func_147424_a(int p_147424_1_, int p_147424_2_, Block[] p_147424_3_, BiomeGenBase[] biomesForGeneration2) {
+        long perfNs = TitansPerf.begin();
+        try {
         int b0 = 63;
         this.func_147423_a(p_147424_1_ * 4, 0, p_147424_2_ * 4);
         for (int k = 0; k < 4; ++k) {
@@ -270,7 +274,12 @@ implements IChunkProvider {
                 }
             }
         }
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.CHUNK_GEN, "ChunkProviderNowhere#terrain", perfNs);
+        }
+}
 
     @Deprecated
     public void func_147421_b(int p_147421_1_, int p_147421_2_, Block[] p_147421_3_, BiomeGenBase[] p_147421_4_) {
@@ -323,6 +332,8 @@ implements IChunkProvider {
     }
 
     public Chunk provideChunk(int p_73154_1_, int p_73154_2_) {
+        long perfNs = TitansPerf.begin();
+        try {
         this.voidRNG.setSeed((long)p_73154_1_ * 341873128712L + (long)p_73154_2_ * 132897987541L);
         Block[] ablock = new Block[65536];
         byte[] abyte = new byte[65536];
@@ -341,7 +352,12 @@ implements IChunkProvider {
         }
         chunk.generateSkylightMap();
         return chunk;
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.CHUNK_GEN, "ChunkProviderNowhere#provideChunk", perfNs);
+        }
+}
 
     private double[] initializeNoiseField(double[] p_73187_1_, int p_73187_2_, int p_73187_3_, int p_73187_4_, int p_73187_5_, int p_73187_6_, int p_73187_7_) {
         ChunkProviderEvent.InitNoiseField event = new ChunkProviderEvent.InitNoiseField((IChunkProvider)this, p_73187_1_, p_73187_2_, p_73187_3_, p_73187_4_, p_73187_5_, p_73187_6_, p_73187_7_);
@@ -434,6 +450,8 @@ implements IChunkProvider {
     }
 
     public void populate(IChunkProvider p_73153_1_, int p_73153_2_, int p_73153_3_) {
+        long perfNs = TitansPerf.begin();
+        try {
         int j2;
         int i2;
         int l1;
@@ -475,7 +493,12 @@ implements IChunkProvider {
         }
         MinecraftForge.EVENT_BUS.post((Event)new PopulateChunkEvent.Post(p_73153_1_, this.voidWorld, this.voidWorld.rand, p_73153_2_, p_73153_3_, false));
         BlockFalling.fallInstantly = false;
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.CHUNK_GEN, "ChunkProviderNowhere#populate", perfNs);
+        }
+}
 
     public boolean saveChunks(boolean p_73151_1_, IProgressUpdate p_73151_2_) {
         return true;

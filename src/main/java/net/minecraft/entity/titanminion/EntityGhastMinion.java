@@ -471,7 +471,7 @@ ITemplar {
 
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, (Object)0);
         this.dataWatcher.addObject(19, (Object)0);
     }
 

@@ -139,7 +139,7 @@ extends EntityTitan {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)1));
+        this.dataWatcher.addObject(16, (Object)1);
     }
 
     protected void setSlimeSize(int p_70799_1_) {

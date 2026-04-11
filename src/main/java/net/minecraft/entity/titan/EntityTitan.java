@@ -732,12 +732,15 @@ IBossDisplayData {
     }
 
     public boolean destroyBlocksInAABBGriefingBypass(AxisAlignedBB p_70972_1_) {
+        long perfNs = TitansPerf.begin();
+        try {
         int i = MathHelper.floor_double((double)p_70972_1_.minX);
         int j = MathHelper.floor_double((double)p_70972_1_.minY);
         int k = MathHelper.floor_double((double)p_70972_1_.minZ);
         int l = MathHelper.floor_double((double)p_70972_1_.maxX);
         int i1 = MathHelper.floor_double((double)p_70972_1_.maxY);
         int j1 = MathHelper.floor_double((double)p_70972_1_.maxZ);
+        TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBGriefingBypass.volume", (l - i + 1) * (i1 - j + 1) * (j1 - k + 1));
         boolean flag = false;
         boolean flag1 = false;
         for (int k1 = i; k1 <= l; ++k1) {
@@ -750,15 +753,23 @@ IBossDisplayData {
             }
         }
         return flag;
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#destroyBlocksInAABBGriefingBypass", perfNs);
+        }
+}
 
     public void destroyBlocksInAABB(AxisAlignedBB p_70972_1_) {
+        long perfNs = TitansPerf.begin();
+        try {
         int i = MathHelper.floor_double((double)p_70972_1_.minX);
         int j = MathHelper.floor_double((double)p_70972_1_.minY);
         int k = MathHelper.floor_double((double)p_70972_1_.minZ);
         int l = MathHelper.floor_double((double)p_70972_1_.maxX);
         int i1 = MathHelper.floor_double((double)p_70972_1_.maxY);
         int j1 = MathHelper.floor_double((double)p_70972_1_.maxZ);
+        TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.volume", (l - i + 1) * (i1 - j + 1) * (j1 - k + 1));
         for (int k1 = i; k1 <= l; ++k1) {
             for (int l1 = j; l1 <= i1; ++l1) {
                 for (int i2 = k; i2 <= j1; ++i2) {
@@ -791,15 +802,23 @@ IBossDisplayData {
                 }
             }
         }
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#destroyBlocksInAABB", perfNs);
+        }
+}
 
     public void destroyBlocksInAABBTopless(AxisAlignedBB p_70972_1_) {
+        long perfNs = TitansPerf.begin();
+        try {
         int i = MathHelper.floor_double((double)p_70972_1_.minX);
         int j = MathHelper.floor_double((double)p_70972_1_.minY);
         int k = MathHelper.floor_double((double)p_70972_1_.minZ);
         int l = MathHelper.floor_double((double)p_70972_1_.maxX);
         int i1 = MathHelper.floor_double((double)p_70972_1_.maxY);
         int j1 = MathHelper.floor_double((double)p_70972_1_.maxZ);
+        TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.volume", (l - i + 1) * (i1 - j + 1) * (j1 - k + 1));
         for (int k1 = i; k1 <= l; ++k1) {
             for (int l1 = j; l1 <= i1; ++l1) {
                 for (int i2 = k; i2 <= j1; ++i2) {
@@ -833,7 +852,12 @@ IBossDisplayData {
                 }
             }
         }
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless", perfNs);
+        }
+}
 
     protected void fall(float p_70069_1_) {
         this.onGround = true;
@@ -974,6 +998,8 @@ IBossDisplayData {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         double d0;
         if (this.getAttackTarget() != null && this.getAttackTarget() instanceof EntityLiving) {
             if (EntityTitan.isOreSpawnBossToExempt((Entity)this.getAttackTarget())) {
@@ -1149,7 +1175,12 @@ IBossDisplayData {
                 }
             }
         }
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
+}
 
     public boolean isNoDespawnRequired() {
         return true;
@@ -1178,7 +1209,10 @@ IBossDisplayData {
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
+        TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.entityScan", list11 == null ? 0 : list11.size());
         if (list11 != null && !list11.isEmpty()) {
             for (int i1 = 0; i1 < list11.size(); ++i1) {
                 Entity entity = (Entity)list11.get(i1);
@@ -1235,7 +1269,12 @@ IBossDisplayData {
                 this.getAttackTarget().setDead();
             }
         }
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
+}
 
     public IEntityLivingData onSpawnWithEgg(IEntityLivingData p_110161_1_) {
         this.setTitanHealth(this.getMaxHealth());

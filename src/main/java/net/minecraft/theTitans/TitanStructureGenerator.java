@@ -29,10 +29,14 @@ import net.minecraft.theTitans.world.WorldGenZombieTitan;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 public class TitanStructureGenerator
 implements IWorldGenerator {
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+        long perfNs = TitansPerf.begin();
+        try {
         int dimensionId = world.provider.dimensionId;
         if (dimensionId == -1) {
             this.generateStructure(random, world, chunkX * 16, chunkZ * 16, new WorldGenMagmaCubeTitan(Blocks.netherrack), 256);
@@ -50,9 +54,16 @@ implements IWorldGenerator {
             this.generateStructure(random, world, chunkX * 16, chunkZ * 16, new WorldGenCreeperTitan(Blocks.stone), 256);
             this.generateStructure(random, world, chunkX * 16, chunkZ * 16, new WorldGenSlimeTitan(Blocks.stone), 256);
         }
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.STRUCTURE_GEN, "TitanStructureGenerator#dim" + world.provider.dimensionId, perfNs);
+        }
+}
 
     private void generateStructure(Random rand, World world, int chunkX, int chunkZ, WorldGenerator worldgen, int maxY) {
+        long perfNs = TitansPerf.begin();
+        try {
         int x = chunkX * 16 + rand.nextInt(16);
         int z = chunkZ * 16 + rand.nextInt(16);
         int randPosY = rand.nextInt(world.getActualHeight());
@@ -62,6 +73,11 @@ implements IWorldGenerator {
         if (rand.nextInt(2) == 0) {
             worldgen.generate(world, rand, x, randPosY, z);
         }
-    }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.WORLD_GEN, worldgen.getClass().getSimpleName(), perfNs);
+        }
+}
 }
 

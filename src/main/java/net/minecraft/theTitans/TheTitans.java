@@ -35,6 +35,7 @@ import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -65,6 +66,8 @@ import net.minecraft.theTitans.world.BiomeGenNowhere;
 import net.minecraft.theTitans.world.BiomeGenVoid;
 import net.minecraft.theTitans.world.WorldProviderNowhere;
 import net.minecraft.theTitans.world.WorldProviderVoid;
+import net.minecraft.theTitans.perf.TitansPerf;
+import net.minecraft.theTitans.perf.TitansPerfTicker;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -121,6 +124,7 @@ public class TheTitans {
     public static boolean NightmareMode;
     public static boolean TotalDestructionMode;
     public static boolean TitansFFAMode;
+    private static final TitansPerfTicker PERF_TICKER = new TitansPerfTicker();
     public static final EnumRarity godly;
 
     @Mod.EventHandler
@@ -150,6 +154,10 @@ public class TheTitans {
         UltimaIronGolemMinionSpawnrate = config.get("general", "UltimaIronGolemMinionSpawnrate", 30).getInt();
         GargoyleKingMinionSpawnrate = config.get("general", "GargoyleKingMinionSpawnrate", 30).getInt();
         SnowGolemMinionSpawnrate = config.get("general", "SnowGolemMinionSpawnrate", 30).getInt();
+        TitansPerf.ENABLED = config.get("perf", "Enable Titans Perf", false).getBoolean(false);
+        TitansPerf.LOG_SLOW_CALLS = config.get("perf", "Log Slow Calls", true).getBoolean(true);
+        TitansPerf.DUMP_INTERVAL_TICKS = config.get("perf", "Dump Interval Ticks", 200).getInt(200);
+        TitansPerf.SLOW_CALL_NS = (long)(config.get("perf", "Slow Call Warn Ms", 5.0).getDouble(5.0) * 1000000.0);
         config.save();
         this.logger.debug("Finished pre-init for The Titans!");
         DimensionManager.registerProviderType((int)200, WorldProviderVoid.class, (boolean)false);
@@ -166,6 +174,10 @@ public class TheTitans {
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
         proxy.init(e);
+        if (TitansPerf.ENABLED) {
+            FMLCommonHandler.instance().bus().register((Object)PERF_TICKER);
+            this.logger.info("TitansPerf enabled: dumpInterval={} ticks slowWarnMs={}", new Object[]{TitansPerf.DUMP_INTERVAL_TICKS, (double)TitansPerf.SLOW_CALL_NS / 1000000.0});
+        }
         proxy.registerRenders();
         this.logger.debug("Initialization started!");
         TitansAchievments.addAchievments();
