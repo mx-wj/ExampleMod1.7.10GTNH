@@ -145,7 +145,7 @@ implements IRangedAttackMob {
 
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)0);
+        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
     }
 
     public boolean canAttackClass(Class p_70686_1_) {
