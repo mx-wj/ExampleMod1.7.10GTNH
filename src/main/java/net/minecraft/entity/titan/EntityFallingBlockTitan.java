@@ -26,6 +26,7 @@ package net.minecraft.entity.titan;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.ITileEntityProvider;
@@ -154,7 +155,7 @@ extends EntityFallingBlock {
     protected void fall(float p_70069_1_) {
         int i;
         if (this.field_145809_g && (i = MathHelper.ceiling_float_int((float)(p_70069_1_ - 1.0f))) > 0) {
-            ArrayList arraylist = new ArrayList(this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(1.0, 1.0, 1.0)));
+            List<Entity> arraylist = new ArrayList<Entity>(this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(1.0, 1.0, 1.0)));
             boolean flag = this.field_145811_e == Blocks.anvil;
             DamageSource damagesource = flag ? DamageSource.anvil : DamageSource.fallingBlock;
             for (Entity entity : arraylist) {

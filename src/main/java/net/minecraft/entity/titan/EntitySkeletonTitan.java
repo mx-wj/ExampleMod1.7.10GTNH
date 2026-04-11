@@ -297,7 +297,7 @@ IEntityMultiPartTitan {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(13, (Object)new Byte(0));
+        this.dataWatcher.addObject(13, (Object)Byte.valueOf((byte)0));
     }
 
     @Override

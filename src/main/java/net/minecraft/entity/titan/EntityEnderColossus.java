@@ -280,8 +280,8 @@ IEntityMultiPartTitan {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(18, (Object)new Byte(0));
-        this.dataWatcher.addObject(19, (Object)new Byte(0));
+        this.dataWatcher.addObject(18, (Object)Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(19, (Object)Byte.valueOf((byte)0));
         this.dataWatcher.addObject(25, (Object)new Integer(0));
     }
 

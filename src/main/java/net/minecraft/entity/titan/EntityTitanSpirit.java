@@ -513,7 +513,7 @@ extends EntityLiving {
                     entity.motionX = mx3 / (double)f2 * 0.4 * 0.4 + entity.motionX;
                     entity.motionY = my3 / (double)f2 * 0.4 * 0.4 + entity.motionY;
                     entity.motionZ = mz3 / (double)f2 * 0.4 * 0.4 + entity.motionZ;
-                    ArrayList arraylist = new ArrayList(this.worldObj.getEntitiesWithinAABBExcludingEntity(entity, entity.boundingBox));
+                    List<Entity> arraylist = new ArrayList<Entity>(this.worldObj.getEntitiesWithinAABBExcludingEntity(entity, entity.boundingBox));
                     boolean flag = ((EntityFallingBlock)entity).func_145805_f() == Blocks.anvil;
                     DamageSource damagesource = flag ? DamageSource.anvil : DamageSource.fallingBlock;
                     for (Entity entity1 : arraylist) {

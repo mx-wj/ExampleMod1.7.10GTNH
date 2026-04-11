@@ -201,7 +201,7 @@ implements IMinion {
         }
         if (this.owner == null && this.rand.nextInt(10) == 0) {
             float f = 256.0f;
-            List list = this.worldObj.getEntitiesWithinAABB(EntityEnderColossus.class, this.boundingBox.expand((double)f, (double)f, (double)f));
+            List<EntityEnderColossus> list = this.worldObj.getEntitiesWithinAABB(EntityEnderColossus.class, this.boundingBox.expand((double)f, (double)f, (double)f));
             EntityEnderColossus entityendercrystal = null;
             double d0 = Double.MAX_VALUE;
             for (EntityEnderColossus entityendercrystal1 : list) {

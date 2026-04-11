@@ -20,7 +20,6 @@ import net.minecraft.entity.titanminion.EntityGhastGuard;
 import net.minecraft.entity.titanminion.EntityGiantZombieBetter;
 import net.minecraft.entity.titanminion.EntityPigZombieMinion;
 import net.minecraft.entity.titanminion.EntityZombieMinion;
-import net.minecraft.entity.titanminion.IMinion;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
@@ -62,20 +61,19 @@ extends EntityThrowable {
         if (!this.worldObj.isRemote) {
             boolean flag;
             boolean flag2;
-            IMinion entitychicken;
             if (this.getThrower() != null && this.getThrower() instanceof EntityTitan && p_70184_1_.entityHit != null && p_70184_1_.entityHit instanceof EntityLivingBase) {
                 ((EntityTitan)this.getThrower()).attackChoosenEntity(p_70184_1_.entityHit, 75.0f, 2);
             }
             if (this.getThrower() != null && this.getThrower() instanceof EntityPigZombieTitan) {
                 if (this.rand.nextInt(5) == 0) {
-                    entitychicken = new EntityGhastGuard(this.worldObj);
-                    entitychicken.setLocationAndAngles(this.posX, this.posY, this.posZ, -this.rotationYaw, -this.rotationPitch);
-                    this.worldObj.spawnEntityInWorld((Entity)entitychicken);
-                    entitychicken.onSpawnWithEgg(null);
-                    entitychicken.motionY += 1.0;
+                    EntityGhastGuard entityGhastGuard = new EntityGhastGuard(this.worldObj);
+                    entityGhastGuard.setLocationAndAngles(this.posX, this.posY, this.posZ, -this.rotationYaw, -this.rotationPitch);
+                    this.worldObj.spawnEntityInWorld((Entity)entityGhastGuard);
+                    entityGhastGuard.onSpawnWithEgg(null);
+                    entityGhastGuard.motionY += 1.0;
                     flag2 = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                    this.worldObj.newExplosion((Entity)entitychicken, entitychicken.posX, entitychicken.posY + 6.0, entitychicken.posZ, 12.0f, false, flag2);
-                    entitychicken.master = (EntityPigZombieTitan)this.getThrower();
+                    this.worldObj.newExplosion((Entity)entityGhastGuard, entityGhastGuard.posX, entityGhastGuard.posY + 6.0, entityGhastGuard.posZ, 12.0f, false, flag2);
+                    entityGhastGuard.master = (EntityPigZombieTitan)this.getThrower();
                 } else {
                     switch (this.rand.nextInt(4)) {
                         case 0: {
@@ -135,13 +133,13 @@ extends EntityThrowable {
             }
             if (this.getThrower() != null && this.getThrower() instanceof EntityZombieTitan) {
                 if (this.rand.nextInt(5) == 0) {
-                    entitychicken = new EntityGiantZombieBetter(this.worldObj);
-                    entitychicken.setLocationAndAngles(this.posX, this.posY, this.posZ, -this.rotationYaw, -this.rotationPitch);
-                    this.worldObj.spawnEntityInWorld((Entity)entitychicken);
-                    entitychicken.onSpawnWithEgg(null);
+                    EntityGiantZombieBetter entityGiantZombie = new EntityGiantZombieBetter(this.worldObj);
+                    entityGiantZombie.setLocationAndAngles(this.posX, this.posY, this.posZ, -this.rotationYaw, -this.rotationPitch);
+                    this.worldObj.spawnEntityInWorld((Entity)entityGiantZombie);
+                    entityGiantZombie.onSpawnWithEgg(null);
                     flag2 = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                    this.worldObj.newExplosion((Entity)entitychicken, ((EntityGiantZombieBetter)entitychicken).posX, ((EntityGiantZombieBetter)entitychicken).posY + 6.0, ((EntityGiantZombieBetter)entitychicken).posZ, 12.0f, false, flag2);
-                    ((EntityGiantZombieBetter)entitychicken).master = (EntityZombieTitan)this.getThrower();
+                    this.worldObj.newExplosion((Entity)entityGiantZombie, entityGiantZombie.posX, entityGiantZombie.posY + 6.0, entityGiantZombie.posZ, 12.0f, false, flag2);
+                    entityGiantZombie.master = (EntityZombieTitan)this.getThrower();
                 } else {
                     switch (this.rand.nextInt(4)) {
                         case 0: {

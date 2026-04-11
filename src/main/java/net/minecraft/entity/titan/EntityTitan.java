@@ -631,7 +631,7 @@ IBossDisplayData {
         this.dataWatcher.addObject(20, (Object)new Integer(0));
         this.dataWatcher.addObject(21, (Object)new Integer(0));
         this.dataWatcher.addObject(22, (Object)new Integer(0));
-        this.dataWatcher.addObject(23, (Object)new Byte(0));
+        this.dataWatcher.addObject(23, (Object)Byte.valueOf((byte)0));
     }
 
     protected void jumpAtEntity(EntityLivingBase e) {

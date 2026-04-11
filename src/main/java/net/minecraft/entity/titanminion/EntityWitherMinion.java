@@ -173,7 +173,7 @@ IMinion {
         Entity entity;
         if (this.isEntityAlive() && this.master == null) {
             float f = 256.0f;
-            List list = this.worldObj.getEntitiesWithinAABB(EntitySkeletonTitan.class, this.boundingBox.expand((double)f, (double)f, (double)f));
+            List<EntitySkeletonTitan> list = this.worldObj.getEntitiesWithinAABB(EntitySkeletonTitan.class, this.boundingBox.expand((double)f, (double)f, (double)f));
             EntitySkeletonTitan entityendercrystal = null;
             double d0 = Double.MAX_VALUE;
             for (EntitySkeletonTitan entityendercrystal1 : list) {

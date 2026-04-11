@@ -158,7 +158,7 @@ extends EntityTitan {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)new Byte(0));
+        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
     }
 
     @Override
