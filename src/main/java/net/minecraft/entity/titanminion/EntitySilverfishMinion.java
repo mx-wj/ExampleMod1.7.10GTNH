@@ -65,6 +65,8 @@
  *  org.apache.commons.lang3.tuple.ImmutablePair
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import java.util.List;
 import net.minecraft.block.Block;
@@ -359,6 +361,8 @@ ITemplar {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntitySilverfishMinion entitychicken;
         if (this.getMinionTypeInt() == 1) {
             this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(16.0);
@@ -561,6 +565,11 @@ ITemplar {
                     this.master = (EntitySilverfishTitan)entity;
                 }
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 
@@ -820,6 +829,8 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityLivingBase e;
         this.renderYawOffset = this.rotationYaw = this.rotationYawHead;
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {
@@ -872,6 +883,11 @@ ITemplar {
             this.motionY = 0.2;
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_) {

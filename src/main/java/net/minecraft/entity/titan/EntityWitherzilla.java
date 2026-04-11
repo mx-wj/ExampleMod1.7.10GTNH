@@ -55,6 +55,8 @@
  *  net.minecraftforge.event.entity.living.EnderTeleportEvent
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
@@ -323,6 +325,8 @@ implements IRangedAttackMob {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         int j;
         int i;
         Entity entity;
@@ -558,6 +562,11 @@ implements IRangedAttackMob {
                 this.worldObj.spawnParticle(this.getParticles(), this.posX + (this.rand.nextDouble() - 0.5) * ((double)this.width * 3.0), this.posY + this.rand.nextDouble() * 210.0, this.posZ + (this.rand.nextDouble() - 0.5) * ((double)this.width * 3.0), 0.0, 0.5, 0.0);
             }
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
@@ -577,6 +586,8 @@ implements IRangedAttackMob {
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         --this.attackTimer;
         if (this.getInvulTime() > 0) {
             if (this.ticksExisted % 1 == 0) {
@@ -726,6 +737,11 @@ implements IRangedAttackMob {
                     }
                 }
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
         }
     }
 

@@ -32,6 +32,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -263,6 +265,8 @@ IEntityMultiPartTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         float f2;
         float f1;
         if (!(this.isRiding() || this.getWaiting() || this.isStunned || this.animID != 0)) {
@@ -825,6 +829,11 @@ IEntityMultiPartTitan {
             }
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     public void attackEntityWithRangedAttack(EntityLivingBase p_82196_1_, float p_82196_2_) {

@@ -28,6 +28,8 @@
  *  net.minecraftforge.common.ForgeHooks
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import java.util.List;
 import net.minecraft.entity.Entity;
@@ -99,6 +101,8 @@ extends EntityTitan {
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         super.updateAITasks();
         EntityLivingBase entity = this.getAttackTarget();
         if (this.onGround && this.slimeJumpDelay-- <= 0 && this.getInvulTime() <= 0) {
@@ -120,6 +124,11 @@ extends EntityTitan {
                 this.moveStrafing = 0.0f;
             }
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public boolean canAttackClass(Class p_70686_1_) {
@@ -139,7 +148,7 @@ extends EntityTitan {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)1));
+        this.dataWatcher.addObject(16, (Object)1);
     }
 
     protected void setSlimeSize(int p_70799_1_) {
@@ -240,6 +249,8 @@ extends EntityTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list1;
         super.onLivingUpdate();
         this.renderYawOffset = this.rotationYaw;
@@ -306,6 +317,11 @@ extends EntityTitan {
             this.worldObj.spawnEntityInWorld((Entity)entitychicken);
             entitychicken.addPotionEffect(new PotionEffect(Potion.resistance.id, 40, 4, false));
             entitychicken.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 

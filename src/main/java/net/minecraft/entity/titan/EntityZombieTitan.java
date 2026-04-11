@@ -35,6 +35,8 @@
  *  net.minecraftforge.common.ForgeModContainer
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -345,6 +347,8 @@ IEntityMultiPartTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         Block block;
         int l;
         int k;
@@ -998,10 +1002,17 @@ IEntityMultiPartTitan {
             }
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
         if (list11 != null && !list11.isEmpty()) {
             for (int i1 = 0; i1 < list11.size(); ++i1) {
@@ -1012,6 +1023,11 @@ IEntityMultiPartTitan {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     protected String getLivingSound() {

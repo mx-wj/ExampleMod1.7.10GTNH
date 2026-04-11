@@ -40,6 +40,8 @@
  *  thehippomaster.MutantCreatures.MutantSkeleton
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.Loader;
@@ -377,6 +379,8 @@ IEntityMultiPartTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list;
         double dz;
         double dx;
@@ -976,6 +980,11 @@ IEntityMultiPartTitan {
             }
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
@@ -1326,6 +1335,8 @@ IEntityMultiPartTitan {
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         super.updateAITasks();
         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
         if (list11 != null && !list11.isEmpty()) {
@@ -1337,6 +1348,11 @@ IEntityMultiPartTitan {
                 if (this.getSkeletonType() != 1) continue;
                 ((EntityLivingBase)entity).addPotionEffect(new PotionEffect(Potion.wither.id, 1500, 3));
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
         }
     }
 

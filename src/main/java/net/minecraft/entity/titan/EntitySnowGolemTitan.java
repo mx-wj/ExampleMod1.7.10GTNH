@@ -24,6 +24,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import java.util.List;
 import net.minecraft.block.material.Material;
@@ -99,6 +101,8 @@ implements IRangedAttackMob {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         double d0;
         if (this.getAttackTarget() != null && this.ticksExisted % 30 == 0 && (d0 = this.getDistanceSqToEntity((Entity)this.getAttackTarget())) <= this.getMeleeRange()) {
             this.swingItem();
@@ -152,6 +156,11 @@ implements IRangedAttackMob {
             }
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected Item getDropItem() {
@@ -220,6 +229,8 @@ implements IRangedAttackMob {
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         super.updateAITasks();
         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
         if (list11 != null && !list11.isEmpty()) {
@@ -229,6 +240,11 @@ implements IRangedAttackMob {
                 float f = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
                 entity.attackEntityFrom(DamageSourceExtra.causeSquishingDamage((Entity)this), f / 2.0f);
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
         }
     }
 }

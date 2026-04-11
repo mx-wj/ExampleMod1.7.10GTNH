@@ -28,6 +28,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -241,6 +243,8 @@ implements IEntityMultiPartTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         double d2;
         double d1;
         double d0;
@@ -446,10 +450,17 @@ implements IEntityMultiPartTitan {
             this.motionY *= 0.25;
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         if (this.getInvulTime() < 0) {
             EntityLivingBase entitylivingbase;
             --this.heightOffsetUpdateTime;
@@ -463,6 +474,11 @@ implements IEntityMultiPartTitan {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public void fall(float distance, float damageMultiplier) {

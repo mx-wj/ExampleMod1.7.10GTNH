@@ -45,6 +45,8 @@
  *  net.minecraft.world.WorldProviderHell
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import java.util.Calendar;
 import java.util.List;
@@ -327,6 +329,8 @@ ITemplar {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntitySkeletonMinion entitychicken;
         if (this.getHealth() > this.getMaxHealth()) {
             this.setHealth(this.getMaxHealth());
@@ -569,9 +573,16 @@ ITemplar {
                 }
             }
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityLivingBase e;
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {
             this.playSound(this.getHurtSound(), this.getSoundVolume(), this.getSoundPitch() + 0.25f);
@@ -583,6 +594,11 @@ ITemplar {
             this.attackEntityAsMob((Entity)e);
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_) {

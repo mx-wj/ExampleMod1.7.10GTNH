@@ -40,6 +40,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -258,6 +260,8 @@ ITemplar {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         double d1;
         EntityBlazeMinion entitychicken;
         if (this.getMinionTypeInt() == 1) {
@@ -418,6 +422,11 @@ ITemplar {
         }
         if (this.isEntityAlive() || this.getMinionTypeInt() != 4) {
             super.onLivingUpdate();
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 
@@ -719,6 +728,8 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityLivingBase e;
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {
             this.playSound(this.getHurtSound(), this.getSoundVolume(), this.getSoundPitch() + 0.25f);
@@ -790,6 +801,11 @@ ITemplar {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_) {

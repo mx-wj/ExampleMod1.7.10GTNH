@@ -28,6 +28,8 @@
  *  net.minecraftforge.common.ForgeHooks
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -199,6 +201,8 @@ implements IAnimatedEntity {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityGargoyleTitanFireball entitylargefireball;
         double d6;
         int i;
@@ -392,10 +396,17 @@ implements IAnimatedEntity {
             EntityGargoyleTitan.addTitanTargetingTaskToEntity((EntityCreature)entitychicken);
             entitychicken.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1.0);
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
         if (list11 != null && !list11.isEmpty()) {
             for (int i1 = 0; i1 < list11.size(); ++i1) {
@@ -406,6 +417,11 @@ implements IAnimatedEntity {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public boolean canAttackClass(Class p_70686_1_) {

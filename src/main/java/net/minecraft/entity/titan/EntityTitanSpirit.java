@@ -29,6 +29,8 @@
  *  net.minecraft.world.WorldServer
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -446,6 +448,8 @@ extends EntityLiving {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         int i;
         if (this.getTonnage() >= this.getMaxTonnage()) {
             this.setDead();
@@ -611,6 +615,11 @@ extends EntityLiving {
                 if (!(entity instanceof EntityEnderCrystal)) continue;
                 ((EntityEnderCrystal)entity).attackEntityFrom(DamageSourceExtra.causeSoulStealingDamage((Entity)this), 100.0f);
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 

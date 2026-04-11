@@ -26,6 +26,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -139,6 +141,8 @@ implements IRangedAttackMob {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         int k;
         int j;
         int i;
@@ -186,6 +190,11 @@ implements IRangedAttackMob {
             this.rotationYawHead += 10.0f;
             this.rotationPitch = -45.0f;
             this.renderYawOffset = this.rotationYaw = this.rotationYawHead;
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 

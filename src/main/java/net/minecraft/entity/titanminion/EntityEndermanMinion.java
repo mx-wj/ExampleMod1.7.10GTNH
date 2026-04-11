@@ -50,6 +50,8 @@
  *  net.minecraftforge.event.entity.living.EnderTeleportEvent
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.common.eventhandler.Event;
 import java.util.IdentityHashMap;
@@ -378,6 +380,8 @@ ITemplar {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         float f;
         EntityLivingBase e;
         double d1;
@@ -620,9 +624,16 @@ ITemplar {
             this.teleportToEntity((Entity)this.master);
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {
             this.playSound("mob.endermen.scream", this.getSoundVolume(), this.getSoundPitch() + 0.25f);
         }
@@ -651,6 +662,11 @@ ITemplar {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_) {

@@ -93,6 +93,8 @@
  *  net.minecraftforge.event.entity.living.EnderTeleportEvent
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.Loader;
@@ -199,8 +201,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.theTitans.perf.PerfSection;
-import net.minecraft.theTitans.perf.TitansPerf;
 import net.minecraft.stats.StatBase;
 import net.minecraft.theTitans.ClientProxy;
 import net.minecraft.theTitans.DamageSourceExtra;

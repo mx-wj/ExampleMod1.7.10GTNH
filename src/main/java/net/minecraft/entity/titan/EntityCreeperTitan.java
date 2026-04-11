@@ -39,6 +39,8 @@
  *  net.minecraftforge.common.ForgeHooks
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
@@ -402,6 +404,8 @@ IEntityMultiPartTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         int in;
         List list;
         float f2;
@@ -848,6 +852,11 @@ IEntityMultiPartTitan {
             this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(25000.0 + (double)(this.getExtraPower() * 1250));
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected String getLivingSound() {
@@ -1044,6 +1053,8 @@ IEntityMultiPartTitan {
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         super.updateAITasks();
         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
         if (list11 != null && !list11.isEmpty()) {
@@ -1053,6 +1064,11 @@ IEntityMultiPartTitan {
                 float f = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
                 entity.attackEntityFrom(DamageSourceExtra.causeSquishingDamage((Entity)this), f / 2.0f);
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
         }
     }
 

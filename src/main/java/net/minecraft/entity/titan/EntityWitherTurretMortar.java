@@ -28,6 +28,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -153,6 +155,8 @@ implements IRangedAttackMob {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         int k;
         int j;
         int i;
@@ -198,6 +202,11 @@ implements IRangedAttackMob {
             if (!this.canTargetEntity(this.getAttackTarget())) {
                 this.setAttackTarget(null);
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 

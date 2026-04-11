@@ -26,6 +26,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -189,6 +191,8 @@ IMinion {
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         byte b0;
         byte b1;
         this.explosionStrength = 3;
@@ -310,6 +314,11 @@ IMinion {
             this.dataWatcher.updateObject(16, (Object)b0);
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     private boolean isCourseTraversable(double p_70790_1_, double p_70790_3_, double p_70790_5_, double p_70790_7_) {

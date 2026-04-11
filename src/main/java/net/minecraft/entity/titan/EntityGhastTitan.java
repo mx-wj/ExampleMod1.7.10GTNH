@@ -31,6 +31,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -241,6 +243,8 @@ extends EntityTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         this.setSize(110.0f, 110.0f);
         for (int i = 0; i < 90; ++i) {
             double d0 = this.posX + (double)(this.rand.nextFloat() * 90.0f - 45.0f);
@@ -319,10 +323,17 @@ extends EntityTitan {
             }
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         byte b0;
         byte b1;
         this.prevAttackCounter = this.attackCounter;
@@ -403,6 +414,11 @@ extends EntityTitan {
             this.dataWatcher.updateObject(16, (Object)b0);
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public int getVerticalFaceSpeed() {

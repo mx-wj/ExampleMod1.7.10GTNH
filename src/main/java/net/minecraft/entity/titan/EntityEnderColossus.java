@@ -39,6 +39,8 @@
  *  net.minecraftforge.common.ForgeHooks
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
@@ -413,6 +415,8 @@ IEntityMultiPartTitan {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list1111;
         float fl;
         int i;
@@ -1106,10 +1110,17 @@ IEntityMultiPartTitan {
             }
         }
         super.onLivingUpdate();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list11;
         if (this.getEyeLaserTime() >= 0 && !this.worldObj.isRemote && this.ticksExisted % 5 == 0) {
             for (int i = 0; i < 2; ++i) {
@@ -1155,6 +1166,11 @@ IEntityMultiPartTitan {
             this.worldObj.createExplosion((Entity)entitychicken, entitychicken.posX, entitychicken.posY, entitychicken.posZ, 6.0f, false);
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     protected String getRoarSound() {

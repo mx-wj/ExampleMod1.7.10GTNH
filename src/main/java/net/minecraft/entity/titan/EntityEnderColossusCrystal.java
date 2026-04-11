@@ -16,6 +16,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -110,11 +112,18 @@ implements IMinion {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         super.onLivingUpdate();
         this.updateEnderColossusEnderCrystal();
         this.ignoreFrustumCheck = true;
         this.renderDistanceWeight = 100.0;
         ++this.innerRotation;
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected void updateEntityActionState() {

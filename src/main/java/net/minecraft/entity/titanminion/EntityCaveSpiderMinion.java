@@ -50,6 +50,8 @@
  *  net.minecraftforge.event.entity.living.EnderTeleportEvent
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.relauncher.Side;
@@ -624,6 +626,8 @@ ITemplar {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityCaveSpiderMinion entitychicken;
         if (this.getMinionTypeInt() == 1) {
             this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20.0);
@@ -795,9 +799,16 @@ ITemplar {
                 this.entityToHeal = null;
             }
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityLivingBase e;
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {
             this.playSound(this.getHurtSound(), this.getSoundVolume(), this.getSoundPitch() + 0.25f);
@@ -917,6 +928,11 @@ ITemplar {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_) {

@@ -36,6 +36,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -166,6 +168,8 @@ IMinion {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         int j;
         int i;
         double d5;
@@ -234,6 +238,11 @@ IMinion {
                 this.worldObj.spawnParticle("mobSpell", this.posX + this.rand.nextGaussian() * 1.0, this.posY + (double)(this.rand.nextFloat() * 3.3f), this.posZ + this.rand.nextGaussian() * 1.0, (double)0.7f, (double)0.7f, (double)0.9f);
             }
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected boolean isAIEnabled() {
@@ -241,6 +250,8 @@ IMinion {
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         if (this.getInvulTime() > 0) {
             int i = this.getInvulTime() - 1;
             if (i <= 0) {
@@ -330,6 +341,11 @@ IMinion {
             if (this.ticksExisted % 20 == 0) {
                 this.heal(1.0f);
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
         }
     }
 

@@ -39,6 +39,8 @@
  *  thehippomaster.MutantCreatures.MutantSkeleton
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.Event;
@@ -166,6 +168,8 @@ IMinion {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         int j;
         int i;
         double d5;
@@ -254,6 +258,11 @@ IMinion {
                 this.worldObj.spawnParticle("mobSpell", this.posX + this.rand.nextGaussian() * 1.0, this.posY + (double)(this.rand.nextFloat() * 3.3f), this.posZ + this.rand.nextGaussian() * 1.0, (double)0.7f, (double)0.7f, (double)0.9f);
             }
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     protected boolean isAIEnabled() {
@@ -261,6 +270,8 @@ IMinion {
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         Entity entity;
         int i1;
         if (this.master != null) {
@@ -358,6 +369,11 @@ IMinion {
             if (this.ticksExisted % 20 == 0) {
                 this.heal(1.0f);
             }
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
         }
     }
 

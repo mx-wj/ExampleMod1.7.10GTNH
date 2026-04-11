@@ -25,6 +25,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import java.util.Iterator;
 import java.util.List;
@@ -147,6 +149,8 @@ IMinion {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         float f12;
         double d2;
         double d10;
@@ -362,6 +366,11 @@ IMinion {
         }
         if (this.targetY >= 240.0) {
             this.targetY = 240.0;
+        }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 

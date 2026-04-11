@@ -44,6 +44,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titanminion;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -529,7 +531,7 @@ ITemplar {
     }
 
     public void onStruckByLightning(EntityLightningBolt lightningBolt) {
-        this.dataWatcher.updateObject(17, (Object)Byte.valueOf((byte)1));
+        this.dataWatcher.updateObject(17, (Object)1);
     }
 
     protected boolean interact(EntityPlayer player) {
@@ -590,6 +592,8 @@ ITemplar {
     }
 
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityCreeperMinion entitychicken;
         if (this.getMinionTypeInt() == 1) {
             this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(40.0);
@@ -766,6 +770,11 @@ ITemplar {
                 this.entityToHeal = null;
             }
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     public boolean attackEntityFrom(DamageSource source, float amount) {
@@ -885,6 +894,8 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         EntityLivingBase e;
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {
             this.playSound(this.getHurtSound(), this.getSoundVolume(), this.getSoundPitch() + 0.25f);
@@ -920,6 +931,11 @@ ITemplar {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_) {

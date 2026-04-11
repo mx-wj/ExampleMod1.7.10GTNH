@@ -30,6 +30,8 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
@@ -179,6 +181,8 @@ implements IAnimatedEntity {
 
     @Override
     public void onLivingUpdate() {
+        long perfNs = TitansPerf.begin();
+        try {
         super.onLivingUpdate();
         this.setSize(24.0f, 64.0f);
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(2000.0);
@@ -296,10 +300,17 @@ implements IAnimatedEntity {
         if (this.holdRoseTick > 0) {
             --this.holdRoseTick;
         }
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+        }
     }
 
     @Override
     protected void updateAITasks() {
+        long perfNs = TitansPerf.begin();
+        try {
         List list11;
         if (--this.homeCheckTimer <= 0) {
             this.homeCheckTimer = 70 + this.rand.nextInt(50);
@@ -320,6 +331,11 @@ implements IAnimatedEntity {
             }
         }
         super.updateAITasks();
+    
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+        }
     }
 
     public boolean canAttackClass(Class p_70686_1_) {
