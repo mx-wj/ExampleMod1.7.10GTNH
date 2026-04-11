@@ -1,0 +1,67 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.init.Items
+ *  net.minecraft.item.Item
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.world.World
+ *  net.minecraft.world.gen.feature.WorldGenerator
+ *  org.apache.logging.log4j.LogManager
+ */
+package net.minecraft.theTitans.world;
+
+import java.util.Random;
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.titan.EntitySkeletonTitan;
+import net.minecraft.entity.titan.EntitySpiderTitan;
+import net.minecraft.entity.titan.EntityTitan;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.theTitans.TheTitans;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenerator;
+import org.apache.logging.log4j.LogManager;
+
+public class WorldGenSpiderJockeyTitan
+extends WorldGenerator {
+    private Block field_150520_a;
+
+    public WorldGenSpiderJockeyTitan(Block p_i45464_1_) {
+        this.field_150520_a = p_i45464_1_;
+    }
+
+    public boolean generate(World worldIn, Random rng, int x, int y, int z) {
+        if (!worldIn.getBlock(x, y - 1, z).isOpaqueCube()) {
+            --y;
+        } else if (worldIn.getBlock(x, y, z).isOpaqueCube()) {
+            ++y;
+        } else if (!worldIn.isRemote && worldIn.isAirBlock(x, y, z) && worldIn.getBlock(x, y - 1, z).isOpaqueCube() && rng.nextInt(1000) == 0) {
+            EntitySkeletonTitan entityomegafish = new EntitySkeletonTitan(worldIn);
+            entityomegafish.setSkeletonType(0);
+            entityomegafish.setCurrentItemOrArmor(0, new ItemStack((Item)Items.bow));
+            entityomegafish.destroyBlocksInAABBGriefingBypass(entityomegafish.boundingBox);
+            entityomegafish.onSpawnWithEgg(null);
+            entityomegafish.setLocationAndAngles((float)x + 0.5f, y, (float)z + 0.5f, rng.nextFloat() * 360.0f, 0.0f);
+            EntitySpiderTitan entityomegafish1 = new EntitySpiderTitan(worldIn);
+            entityomegafish1.destroyBlocksInAABBGriefingBypass(entityomegafish1.boundingBox);
+            entityomegafish1.copyLocationAndAnglesFrom((Entity)entityomegafish);
+            entityomegafish1.onSpawnWithEgg(null);
+            EntityTitan otherTitan = (EntityTitan)worldIn.findNearestEntityWithinAABB(EntityTitan.class, entityomegafish.boundingBox.expand(200.0, 200.0, 200.0), (Entity)entityomegafish);
+            if (otherTitan != null) {
+                return false;
+            }
+            worldIn.spawnEntityInWorld((Entity)entityomegafish);
+            worldIn.spawnEntityInWorld((Entity)entityomegafish1);
+            LogManager.getLogger(TheTitans.class).info("Found a succesfully spawned Spider Jockey Titan at " + x + ", " + y + ", " + z + ", spawning.");
+            entityomegafish.mountEntity((Entity)entityomegafish1);
+            return true;
+        }
+        return false;
+    }
+}
+

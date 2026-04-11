@@ -1,0 +1,83 @@
+name: Debug Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/**'
+      - '.github/workflows/debug-build.yml'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'dependencies.gradle'
+      - 'repositories.gradle'
+      - 'gradle/**'
+      - 'gradlew'
+      - '.java-version'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Java from .java-version
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version-file: .java-version
+          cache: gradle
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run Gradle build and capture log
+        id: gradle_build
+        shell: bash
+        run: |
+          set +e
+          ./gradlew --no-daemon --stacktrace --info --console=plain clean build 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
+
+          grep -nE ':[0-9]+: error:| error: |^FAILURE: Build failed|^\* What went wrong:|^Caused by:|^Exception is:' build.log > compile-errors.txt || true
+
+          {
+            echo "## Build exit code"
+            echo ""
+            echo "\`$status\`"
+            echo ""
+            echo "## Extracted errors"
+            echo ""
+            if [ -s compile-errors.txt ]; then
+              sed -n '1,200p' compile-errors.txt
+            else
+              echo "No filtered compile errors found. Check build.log."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload logs and outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-build-logs
+          path: |
+            build.log
+            compile-errors.txt
+            build/reports/**
+            build/libs/**
+          if-no-files-found: ignore
+
+      - name: Fail workflow if build failed
+        if: steps.gradle_build.outputs.exit_code != '0'
+        run: |
+          echo "Build failed. See Summary and artifact debug-build-logs."
+          test -f compile-errors.txt && cat compile-errors.txt || true
+          exit 1
