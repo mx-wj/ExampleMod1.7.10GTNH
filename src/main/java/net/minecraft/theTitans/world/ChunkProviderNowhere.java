@@ -257,7 +257,7 @@ implements IChunkProvider {
                             for (int k3 = 0; k3 < 4; ++k3) {
                                 double d;
                                 d15 += d16;
-                                p_147424_3_[j3 += short1] = d > 0.0 ? Blocks.obsidian : null;
+                                p_147424_3_[j3 += short1] = d15 > 0.0 ? Blocks.obsidian : null;
                             }
                             d10 += d12;
                             d11 += d13;
