@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          ./gradlew --no-daemon --stacktrace --info --console=plain clean build 2>&1 | tee build.log
+          ./gradlew --no-daemon --stacktrace --console=plain build 2>&1 | tee build.log
           status=${PIPESTATUS[0]}
 
           grep -nE ':[0-9]+: error:| error: |^FAILURE: Build failed|^\* What went wrong:|^Caused by:|^Exception is:' build.log > compile-errors.txt || true
