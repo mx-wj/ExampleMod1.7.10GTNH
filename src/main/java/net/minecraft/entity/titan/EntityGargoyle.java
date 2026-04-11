@@ -134,7 +134,7 @@ extends EntityGolem {
         this.dataWatcher.addObject(13, (Object)Byte.valueOf((byte)0));
         this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
         this.dataWatcher.addObject(17, (Object)0);
-        this.getDataWatcher().addObject(21, (Object)0);
+        this.getDataWatcher().addObject(21, (Object)Byte.valueOf((byte)0));
     }
 
     public int getGargoyleType() {
