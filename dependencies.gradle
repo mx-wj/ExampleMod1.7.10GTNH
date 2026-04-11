@@ -35,4 +35,5 @@
  */
 dependencies {
     devOnlyNonPublishable(rfg.deobf(project.files("libs/OreSpawn.jar")))
+    devOnlyNonPublishable(rfg.deobf(project.files("libs/MutantCreatures.jar")))
 }
