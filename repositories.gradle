@@ -1,5 +1,12 @@
-// Add any additional repositories for your dependencies here.
-
 repositories {
+    mavenCentral()
 
+    maven {
+        name = "Maven Central Direct"
+        url = uri("https://repo1.maven.org/maven2/")
+        content {
+            includeGroup("org.scala-lang")
+            includeGroup("org.scala-lang.modules")
+        }
+    }
 }
