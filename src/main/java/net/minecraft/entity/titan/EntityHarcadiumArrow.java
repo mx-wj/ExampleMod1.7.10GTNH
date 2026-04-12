@@ -141,7 +141,7 @@ extends EntityArrow {
     }
 
     protected void entityInit() {
-        this.dataWatcher.addObject(16, (Object)0);
+        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
     }
 
     public void setThrowableHeading(double x, double y, double z, float velocity, float inaccuracy) {

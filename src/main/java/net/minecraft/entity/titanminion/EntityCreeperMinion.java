@@ -531,7 +531,7 @@ ITemplar {
     }
 
     public void onStruckByLightning(EntityLightningBolt lightningBolt) {
-        this.dataWatcher.updateObject(17, (Object)1);
+        this.dataWatcher.updateObject(17, (Object)Byte.valueOf((byte)1));
     }
 
     protected boolean interact(EntityPlayer player) {
