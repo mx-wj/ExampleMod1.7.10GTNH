@@ -88,7 +88,7 @@ public final class TitansWatchdog implements Runnable {
                 if (info == null) {
                     continue;
                 }
-                pw.println(""" + info.getThreadName() + "" Id=" + info.getThreadId() + " State=" + info.getThreadState());
+                pw.println("\"" + info.getThreadName() + "\" Id=" + info.getThreadId() + " State=" + info.getThreadState());
                 if (info.getLockName() != null) {
                     pw.println("  waiting on " + info.getLockName());
                 }
@@ -106,7 +106,7 @@ public final class TitansWatchdog implements Runnable {
             pw.println("=== Raw Thread.getAllStackTraces ===");
             for (Map.Entry<Thread, StackTraceElement[]> e : Thread.getAllStackTraces().entrySet()) {
                 Thread t = e.getKey();
-                pw.println(""" + t.getName() + "" State=" + t.getState());
+                pw.println("\"" + t.getName() + "\" State=" + t.getState());
                 StackTraceElement[] stack = e.getValue();
                 int j;
                 for (j = 0; j < stack.length; ++j) {
