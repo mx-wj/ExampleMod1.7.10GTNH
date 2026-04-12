@@ -621,7 +621,9 @@ ITemplar {
             this.experienceValue = 10;
         }
         if (this.isEntityAlive() || this.getMinionTypeInt() != 4) {
+            long perfSuperNs = TitansPerf.begin();
             super.onLivingUpdate();
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuperNs);
         }
         if (this.getMinionTypeInt() == 3) {
             if (this.rand.nextInt(120) == 0 && this.master == null && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
@@ -727,7 +729,10 @@ ITemplar {
             if (this.onGround) {
                 this.isAirBorne = false;
             }
+            long perfNearbyNs = TitansPerf.begin();
             List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(8.0, 8.0, 8.0));
+            TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.nearbyScan", perfNearbyNs);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.nearbyEntities", list11 == null ? 0 : list11.size());
             if (!this.worldObj.isRemote && list11 != null && !list11.isEmpty() && this.ticksExisted % (this.getHealth() < this.getMaxHealth() / 2.0f ? 40 : 160) == 0) {
                 this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
                 for (int i1 = 0; i1 < list11.size(); ++i1) {
@@ -921,7 +926,10 @@ ITemplar {
                 }
             }
         } else {
+            long perfMasterNs = TitansPerf.begin();
             List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(100.0, 100.0, 100.0));
+            TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.masterScan", perfMasterNs);
+            TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.masterCandidates", list == null ? 0 : list.size());
             if (list != null && !list.isEmpty()) {
                 for (int i1 = 0; i1 < list.size(); ++i1) {
                     Entity entity = (Entity)list.get(i1);
@@ -930,7 +938,9 @@ ITemplar {
                 }
             }
         }
+        long perfSuperAiNs = TitansPerf.begin();
         super.updateAITasks();
+        TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.super", perfSuperAiNs);
     
         }
         finally {

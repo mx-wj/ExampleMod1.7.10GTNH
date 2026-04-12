@@ -505,7 +505,9 @@ implements IRangedAttackMob {
                 this.renderYawOffset = this.rotationYaw = (float)Math.atan2(this.motionZ, this.motionX) * 57.295776f - 90.0f;
             }
         }
+        long perfSuperNs = TitansPerf.begin();
         super.onLivingUpdate();
+        TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuperNs);
         for (i = 0; i < 2; ++i) {
             this.field_82218_g[i] = this.field_82221_e[i];
             this.field_82217_f[i] = this.field_82220_d[i];
@@ -659,7 +661,9 @@ implements IRangedAttackMob {
                     this.teleportRandomly(false);
                 }
             }
+            long perfLoadedNs = TitansPerf.begin();
             if ((list = this.worldObj.loadedEntityList) != null && !list.isEmpty()) {
+                TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.loadedEntities", list.size());
                 for (i1 = 0; i1 < list.size(); ++i1) {
                     entity = (Entity)list.get(i1);
                     if (!(this.worldObj.provider instanceof WorldProviderVoid) && entity != null && entity instanceof EntityPlayer && ((EntityPlayer)entity).getHeldItem() != null && ((EntityPlayer)entity).getHeldItem().getItem() != TitanItems.ultimaBlade) {
@@ -672,6 +676,7 @@ implements IRangedAttackMob {
                     list.remove(entity);
                 }
             }
+            TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.loadedEntityLoop", perfLoadedNs);
             for (i = 1; i < 3; ++i) {
                 int i12;
                 if (this.ticksExisted < this.field_82223_h[i - 1] || this.getAttackTarget() == null) continue;
@@ -732,7 +737,9 @@ implements IRangedAttackMob {
                         }
                     }
                     if (flag) {
+                        long perfBreakNs = TitansPerf.begin();
                         this.destroyBlocksInAABB(this.boundingBox);
+                        TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#updateAITasks.destroyBlocks", perfBreakNs);
                         this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1012, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
                     }
                 }

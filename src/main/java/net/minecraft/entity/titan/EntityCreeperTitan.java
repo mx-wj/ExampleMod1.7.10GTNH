@@ -672,7 +672,9 @@ IEntityMultiPartTitan {
                 }
             }
         }
+        long perfRange100Ns = TitansPerf.begin();
         if ((list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(100.0, 100.0, 100.0))) != null && !list.isEmpty() && this.ticksExisted % 20 == 0) {
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.range100Entities", list.size());
             for (int i1 = 0; i1 < list.size(); ++i1) {
                 Entity entity = (Entity)list.get(i1);
                 if (entity == null || !this.getPowered() || !(entity instanceof EntityCreeperMinion)) continue;
@@ -851,7 +853,10 @@ IEntityMultiPartTitan {
             }
             this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(25000.0 + (double)(this.getExtraPower() * 1250));
         }
+        TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.range100Scan", perfRange100Ns);
+        long perfSuperNs = TitansPerf.begin();
         super.onLivingUpdate();
+        TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuperNs);
     
         }
         finally {
@@ -1055,8 +1060,13 @@ IEntityMultiPartTitan {
     protected void updateAITasks() {
         long perfNs = TitansPerf.begin();
         try {
+        long perfSuperAiNs = TitansPerf.begin();
         super.updateAITasks();
+        TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.super", perfSuperAiNs);
+        long perfBoxNs = TitansPerf.begin();
         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
+        TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.boxScan", perfBoxNs);
+        TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.boxEntities", list11 == null ? 0 : list11.size());
         if (list11 != null && !list11.isEmpty()) {
             for (int i1 = 0; i1 < list11.size(); ++i1) {
                 Entity entity = (Entity)list11.get(i1);

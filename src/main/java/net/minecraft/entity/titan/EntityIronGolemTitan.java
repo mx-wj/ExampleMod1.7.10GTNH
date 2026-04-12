@@ -134,7 +134,7 @@ implements IAnimatedEntity {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, (Object)0);
     }
 
     @Override
@@ -183,7 +183,9 @@ implements IAnimatedEntity {
     public void onLivingUpdate() {
         long perfNs = TitansPerf.begin();
         try {
+        long perfSuperNs = TitansPerf.begin();
         super.onLivingUpdate();
+        TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuperNs);
         this.setSize(24.0f, 64.0f);
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(2000.0);
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(500000.0);
@@ -266,7 +268,10 @@ implements IAnimatedEntity {
         }
         this.meleeTitan = true;
         this.setCustomNameTag("\u00a77\u00a7lUltima Iron Golem Titan");
+        long perfScanNs = TitansPerf.begin();
         List list1 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 96.0, 96.0));
+        TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.range96Scan", perfScanNs);
+        TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.range96Entities", list1 == null ? 0 : list1.size());
         if (list1 != null && !list1.isEmpty()) {
             for (int i1 = 0; i1 < list1.size(); ++i1) {
                 Entity entity = (Entity)list1.get(i1);
@@ -322,7 +327,9 @@ implements IAnimatedEntity {
                 this.setHomeArea(chunkcoordinates.posX, chunkcoordinates.posY, chunkcoordinates.posZ, (int)((float)this.villageObj.getVillageRadius() * 0.6f));
             }
         }
+        long perfBoxNs = TitansPerf.begin();
         if ((list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox)) != null && !list11.isEmpty()) {
+            TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.boxEntities", list11.size());
             for (int i1 = 0; i1 < list11.size(); ++i1) {
                 Entity entity = (Entity)list11.get(i1);
                 if (!(entity instanceof EntityLiving) && (!(entity instanceof EntityPlayer) || this.isPlayerCreated()) || !entity.onGround || entity instanceof EntityTitan || entity instanceof EntityIronGolem) continue;
@@ -330,7 +337,10 @@ implements IAnimatedEntity {
                 entity.attackEntityFrom(DamageSourceExtra.causeSquishingDamage((Entity)this), f / 2.0f);
             }
         }
+        TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.boxScan", perfBoxNs);
+        long perfSuperAiNs = TitansPerf.begin();
         super.updateAITasks();
+        TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.super", perfSuperAiNs);
     
         }
         finally {
