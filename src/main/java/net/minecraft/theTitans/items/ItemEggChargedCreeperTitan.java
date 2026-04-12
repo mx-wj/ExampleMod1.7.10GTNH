@@ -44,7 +44,7 @@ extends Item {
         }
         entity.onSpawnWithEgg(null);
         entity.setLocationAndAngles((double)p_77648_4_ + 0.5, (double)p_77648_5_ + d0, (double)p_77648_6_ + 0.5, 0.0f, 0.0f);
-        entity.getDataWatcher().updateObject(17, (Object)1);
+        entity.getDataWatcher().updateObject(17, (Object)Byte.valueOf((byte)1));
         if (!worldIn.isRemote) {
             worldIn.spawnEntityInWorld((Entity)entity);
         }
