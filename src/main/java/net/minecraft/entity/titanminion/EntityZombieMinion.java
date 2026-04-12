@@ -761,7 +761,7 @@ ITemplar {
                         TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.nearbyScan", perfNearbyNs);
                         TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.nearbyEntities", list11 == null ? 0 : list11.size());
                         if (!this.worldObj.isRemote && list11 != null && !list11.isEmpty() && list11.size() <= 12 && (this.ticksExisted + this.getEntityId()) % (this.getHealth() < this.getMaxHealth() / 2.0f ? 80 : 200) == 0) {
-                            FastExplosion.explodeLight(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 4.5f, 10.0f, 12);
+                            FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 4.5f, false, true);
                             for (int i1 = 0; i1 < list11.size(); ++i1) {
                                 Entity entity = (Entity)list11.get(i1);
                                 if (entity == null || !(entity instanceof EntityLivingBase) || !this.canAttackClass(entity.getClass())) continue;
