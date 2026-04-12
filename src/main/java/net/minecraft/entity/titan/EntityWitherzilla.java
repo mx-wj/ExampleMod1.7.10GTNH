@@ -102,6 +102,7 @@ import net.minecraft.entity.titan.EntityWitherTurret;
 import net.minecraft.entity.titan.EntityWitherTurretGround;
 import net.minecraft.entity.titan.EntityWitherTurretMortar;
 import net.minecraft.entity.titan.EntityWitherzillaMinion;
+import net.minecraft.entity.titan.EntityWitherzillaSkull;
 import net.minecraft.entity.titan.EntityXPBomb;
 import net.minecraft.entity.titan.EnumTitanStatus;
 import net.minecraft.entity.titan.ai.EntityAINearestTargetTitan;
@@ -682,12 +683,12 @@ implements IRangedAttackMob {
             for (i = 1; i < 3; ++i) {
                 int i12;
                 if (this.ticksExisted < this.field_82223_h[i - 1] || this.getAttackTarget() == null) continue;
-                this.field_82223_h[i - 1] = this.ticksExisted + this.rand.nextInt(20);
+                this.field_82223_h[i - 1] = this.ticksExisted + 40 + this.rand.nextInt(40);
                 int k2 = i - 1;
                 int l2 = this.field_82224_i[i - 1];
                 this.field_82224_i[k2] = this.field_82224_i[i - 1] + 1;
                 if (l2 > 15) {
-                    for (int i11 = 0; i11 < 100; ++i11) {
+                    for (int i11 = 0; i11 < 4; ++i11) {
                         float f = 100.0f;
                         float f1 = 20.0f;
                         double d02 = MathHelper.getRandomDoubleInRange((Random)this.rand, (double)(this.posX - (double)f), (double)(this.posX + (double)f));
@@ -773,36 +774,39 @@ implements IRangedAttackMob {
     }
 
     private void launchWitherSkullToEntity(int p_82216_1_, EntityLivingBase p_82216_2_) {
+        if (p_82216_2_ == null || !p_82216_2_.isEntityAlive()) {
+            return;
+        }
         if (p_82216_2_ instanceof EntityTitan || p_82216_2_.height >= 6.0f) {
             double d0 = this.getDistanceSqToEntity((Entity)p_82216_2_);
             if (d0 < 1000.0 && this.attackTimer <= 0) {
-                this.attackTimer = 10;
+                this.attackTimer = 20;
                 this.attackEntityAsMob((Entity)p_82216_2_);
             }
-        } else {
-            this.launchWitherSkullToCoords(p_82216_1_, p_82216_2_.posX, p_82216_2_.posY + (double)p_82216_2_.getEyeHeight() * 0.5, p_82216_2_.posZ, p_82216_1_ == 0 && this.rand.nextFloat() < 0.001f);
-            p_82216_2_.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase)this), 21.0f);
-            p_82216_2_.hurtResistantTime = 0;
+            return;
         }
-        this.launchWitherSkullToCoords(p_82216_1_, p_82216_2_.posX, p_82216_2_.posY + (double)p_82216_2_.getEyeHeight() * 0.5, p_82216_2_.posZ, p_82216_1_ == 0 && this.rand.nextFloat() < 0.001f);
+        this.launchWitherSkullToCoords(p_82216_1_, p_82216_2_.posX, p_82216_2_.posY + (double)p_82216_2_.getEyeHeight() * 0.5, p_82216_2_.posZ, false);
     }
 
     private void launchWitherSkullToCoords(int p_82209_1_, double p_82209_2_, double p_82209_4_, double p_82209_6_, boolean p_82209_8_) {
+        if (this.worldObj.isRemote) {
+            return;
+        }
         double d3 = this.func_82214_u(p_82209_1_);
         double d4 = this.func_82208_v(p_82209_1_);
         double d5 = this.func_82213_w(p_82209_1_);
         double d6 = p_82209_2_ - d3;
         double d7 = p_82209_4_ - d4;
         double d8 = p_82209_6_ - d5;
-        EntityWitherSkull entitywitherskull = new EntityWitherSkull(this.worldObj, (EntityLivingBase)this, d6, d7, d8);
+        EntityWitherzillaSkull skull = new EntityWitherzillaSkull(this.worldObj, (EntityLivingBase)this, d6, d7, d8);
         if (p_82209_8_) {
-            entitywitherskull.setInvulnerable(true);
+            skull.setInvulnerable(true);
         }
-        entitywitherskull.posY = d4;
-        entitywitherskull.posX = d3;
-        entitywitherskull.posZ = d5;
+        skull.posY = d4;
+        skull.posX = d3;
+        skull.posZ = d5;
         this.worldObj.playSoundEffect(d3, d4, d5, "mob.wither.shoot", 3.0f, 0.8f);
-        this.worldObj.spawnEntityInWorld((Entity)entitywitherskull);
+        this.worldObj.spawnEntityInWorld((Entity)skull);
     }
 
     public void attackEntityWithRangedAttack(EntityLivingBase p_82196_1_, float p_82196_2_) {
