@@ -31,16 +31,18 @@ jobs:
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           echo "Latest successful run id: $run_id"
 
-      - name: Download thetitans-mod artifact
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Download thetitans-mod artifact from that run
+        uses: actions/download-artifact@v5
+        with:
+          name: thetitans-mod
+          run-id: ${{ steps.find_run.outputs.run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: fetched
+
+      - name: Show downloaded files
         shell: bash
         run: |
-          mkdir -p fetched
-          gh run download "${{ steps.find_run.outputs.run_id }}" \
-            --name "thetitans-mod" \
-            --dir fetched
-
           echo "Downloaded files:"
           find fetched -maxdepth 3 -type f | sort
 
