@@ -1,54 +1,133 @@
-name: Fetch Latest Mod Artifact
+name: Debug Build
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/**'
+      - '.github/workflows/debug-build.yml'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'dependencies.gradle'
+      - 'repositories.gradle'
+      - 'gradle/**'
+      - 'gradlew'
+      - '.java-version'
 
 jobs:
-  fetch:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: read
 
     steps:
-      - name: Find latest successful Debug Build run
-        id: find_run
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Java from .java-version
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version-file: .java-version
+          cache: gradle
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run Gradle build and capture log
+        id: gradle_build
         shell: bash
         run: |
-          run_id="$(
-            gh api \
-              "/repos/${{ github.repository }}/actions/workflows/debug-build.yml/runs?branch=master&status=success&per_page=1" \
-              --jq '.workflow_runs[0].id'
-          )"
+          set +e
+          ./gradlew --no-daemon --stacktrace --console=plain build 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
 
-          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
-            echo "No successful run found for debug-build.yml on master"
-            exit 1
+          grep -nE ':[0-9]+: error:|cannot find symbol|symbol:|location:|package .* does not exist|^FAILURE: Build failed|^\* What went wrong:|^Caused by:|^Exception is:' build.log > compile-errors.txt || true
+
+          {
+            echo "## Build exit code"
+            echo
+            echo "\`$status\`"
+            echo
+            echo "## Extracted errors"
+            echo
+            if [ -s compile-errors.txt ]; then
+              sed -n '1,200p' compile-errors.txt
+            else
+              echo "No filtered compile errors found. Check build.log."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Collect Minecraft sources jar
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p dist
+
+          src_dir=""
+
+          # 常见位置先试
+          for d in \
+            build/tmp/decompile/forge-1.7.10-10.13.4.1614-1.7.10-sources \
+            build/tmp/decompile \
+            build/rfg \
+            build/tmp \
+            build \
+            "$HOME/.gradle"
+          ; do
+            if [ -d "$d" ]; then
+              hit="$(find "$d" -type d \( -iname '*decomp*sources*' -o -iname '*minecraft*sources*' -o -iname '*forge*1.7.10*sources*' -o -iname '*sources*' \) 2>/dev/null | head -n 1 || true)"
+              if [ -n "$hit" ]; then
+                src_dir="$hit"
+                break
+              fi
+            fi
+          done
+
+          if [ -z "$src_dir" ]; then
+            echo "Could not find a Minecraft sources directory"
+            echo "Top build tree:"
+            find build -maxdepth 5 \( -type d -o -type f \) 2>/dev/null | sed -n '1,300p' || true
+            exit 0
           fi
 
-          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-          echo "Latest successful run id: $run_id"
+          echo "Using sources dir: $src_dir"
 
-      - name: Download thetitans-mod artifact from that run
-        uses: actions/download-artifact@v5
-        with:
-          name: thetitans-mod
-          run-id: ${{ steps.find_run.outputs.run_id }}
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          path: fetched
+          # 打成 sources jar
+          (
+            cd "$src_dir"
+            zip -qr "$GITHUB_WORKSPACE/dist/minecraft-1.7.10-sources.jar" .
+          )
 
-      - name: Show downloaded files
-        shell: bash
-        run: |
-          echo "Downloaded files:"
-          find fetched -maxdepth 3 -type f | sort
+          ls -lh "$GITHUB_WORKSPACE/dist/minecraft-1.7.10-sources.jar"
 
-      - name: Upload fetched artifact again
+      - name: Upload logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: fetched-thetitans-mod
-          path: fetched/**
-          if-no-files-found: error
+          name: debug-build-logs
+          path: |
+            build.log
+            compile-errors.txt
+          if-no-files-found: ignore
+
+      - name: Upload Minecraft sources jar
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: minecraft-sources
+          path: dist/minecraft-1.7.10-sources.jar
+          if-no-files-found: ignore
+
+      - name: Fail workflow if build failed
+        if: steps.gradle_build.outputs.exit_code != '0'
+        run: |
+          echo "Build failed. See Summary and artifact debug-build-logs."
+          test -f compile-errors.txt && cat compile-errors.txt || true
+          exit 1
