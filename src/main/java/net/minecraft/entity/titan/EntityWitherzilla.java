@@ -672,21 +672,49 @@ implements IRangedAttackMob {
                 TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.omegaRefresh", 1);
                 this.omegacounter = 600;
             }
-            if (this.ticksExisted % 400 == 0 && !(this.worldObj.provider instanceof WorldProviderVoid)) {
+            if (((this.ticksExisted + this.getEntityId()) % 40 == 0) && !(this.worldObj.provider instanceof WorldProviderVoid)) {
                 long perfTargetAcquireNs = TitansPerf.begin();
                 int teleports = 0;
                 int bans = 0;
+                int candidates = 0;
                 try {
-                    EntityPlayer entity2 = this.worldObj.getClosestPlayerToEntity((Entity)this, -1.0);
-                    if (this.allPlayerList != null && !this.allPlayerList.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid) && this.getAttackTarget() == null && entity2 != null && this.worldObj.provider == entity2.worldObj.provider) {
-                        for (i1 = 0; i1 < this.allPlayerList.size(); ++i1) {
-                            this.teleportToEntity((Entity)entity2, true);
-                            ++teleports;
-                            if (entity2.capabilities.disableDamage) continue;
-                            this.setAttackTarget((EntityLivingBase)entity2);
+                    EntityLivingBase currentTarget = this.getAttackTarget();
+                    if (currentTarget == null || !currentTarget.isEntityAlive() || this.getDistanceSqToEntity((Entity)currentTarget) > 36864.0) {
+                        currentTarget = null;
+                    }
+                    EntityLivingBase bestTarget = currentTarget;
+                    double bestDist = currentTarget != null ? this.getDistanceSqToEntity((Entity)currentTarget) : Double.MAX_VALUE;
+                    List nearbyTargets = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(96.0, 64.0, 96.0));
+                    if (nearbyTargets != null && !nearbyTargets.isEmpty()) {
+                        candidates = nearbyTargets.size();
+                        for (int idx = 0; idx < nearbyTargets.size(); ++idx) {
+                            EntityLivingBase living = (EntityLivingBase)nearbyTargets.get(idx);
+                            if (living == null || living == this || !living.isEntityAlive()) continue;
+                            if (!this.canAttackClass(living.getClass())) continue;
+                            if (living instanceof EntityWitherzilla || living instanceof EntityWitherzillaMinion || living instanceof EntityWitherMinion || living instanceof EntityWitherTurret || living instanceof EntityWitherTurretGround || living instanceof EntityWitherTurretMortar) continue;
+                            double dTarget = this.getDistanceSqToEntity((Entity)living);
+                            if (!(dTarget < bestDist)) continue;
+                            bestDist = dTarget;
+                            bestTarget = living;
                         }
                     }
-                    if (entity2 != null && this.deathTicks <= 0 && this.allPlayerList != null && !this.allPlayerList.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid) && this.rand.nextInt(20) == 0 && this.getAttackTarget() != null && this.getAttackTarget() == entity2 && this.isArmored()) {
+                    if (bestTarget == null) {
+                        EntityPlayer entity2 = this.worldObj.getClosestPlayerToEntity((Entity)this, -1.0);
+                        if (entity2 != null && this.worldObj.provider == entity2.worldObj.provider && !entity2.capabilities.disableDamage) {
+                            bestTarget = (EntityLivingBase)entity2;
+                        }
+                    }
+                    if (bestTarget != null) {
+                        this.setAttackTarget(bestTarget);
+                        if (bestTarget instanceof EntityPlayer && this.allPlayerList != null && !this.allPlayerList.isEmpty()) {
+                            for (i1 = 0; i1 < this.allPlayerList.size(); ++i1) {
+                                this.teleportToEntity((Entity)bestTarget, true);
+                                ++teleports;
+                            }
+                        }
+                    }
+                    if (bestTarget instanceof EntityPlayer && this.deathTicks <= 0 && this.allPlayerList != null && !this.allPlayerList.isEmpty() && this.rand.nextInt(20) == 0 && this.getAttackTarget() == bestTarget && this.isArmored()) {
+                        EntityPlayer entity2 = (EntityPlayer)bestTarget;
                         for (i1 = 0; i1 < this.allPlayerList.size(); ++i1) {
                             if (this.worldObj.isRemote) continue;
                             MinecraftServer minecraftserver = MinecraftServer.getServer();
@@ -705,6 +733,7 @@ implements IRangedAttackMob {
                     TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.targetAcquire", perfTargetAcquireNs);
                     TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.teleports", teleports);
                     TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.bans", bans);
+                    TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.targetCandidates", candidates);
                 }
             }
             if (this.getAttackTarget() != null && this.canAttack() && this.getAttackTarget() instanceof EntityLivingBase && (d0 = this.getDistanceSqToEntity((Entity)this.getAttackTarget())) < (double)(this.width * this.width + this.getAttackTarget().width * this.getAttackTarget().width) + 6000.0) {

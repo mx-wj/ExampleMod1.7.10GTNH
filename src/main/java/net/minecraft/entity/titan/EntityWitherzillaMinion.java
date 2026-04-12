@@ -63,7 +63,6 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.entity.titan.EntityWitherTurret;
 import net.minecraft.entity.titan.EntityWitherTurretGround;
 import net.minecraft.entity.titan.EntityWitherTurretMortar;
@@ -410,7 +409,7 @@ IMinion {
         double d6 = p_82209_2_ - d3;
         double d7 = p_82209_4_ - d4;
         double d8 = p_82209_6_ - d5;
-        EntityWitherSkull entitywitherskull = new EntityWitherSkull(this.worldObj, (EntityLivingBase)this, d6, d7, d8);
+        EntityWitherzillaSkull entitywitherskull = new EntityWitherzillaSkull(this.worldObj, (EntityLivingBase)this, d6, d7, d8);
         if (p_82209_8_) {
             entitywitherskull.setInvulnerable(true);
         }
