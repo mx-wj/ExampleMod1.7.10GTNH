@@ -44,15 +44,15 @@ jobs:
           ./gradlew --no-daemon --stacktrace --console=plain build 2>&1 | tee build.log
           status=${PIPESTATUS[0]}
 
-          grep -nE ':[0-9]+: error:| error: |^FAILURE: Build failed|^\* What went wrong:|^Caused by:|^Exception is:' build.log > compile-errors.txt || true
+          grep -nE ':[0-9]+: error:|cannot find symbol|symbol:|location:|package .* does not exist|^FAILURE: Build failed|^\* What went wrong:|^Caused by:|^Exception is:' build.log > compile-errors.txt || true
 
           {
             echo "## Build exit code"
-            echo ""
+            echo
             echo "\`$status\`"
-            echo ""
+            echo
             echo "## Extracted errors"
-            echo ""
+            echo
             if [ -s compile-errors.txt ]; then
               sed -n '1,200p' compile-errors.txt
             else
@@ -63,7 +63,26 @@ jobs:
           echo "exit_code=$status" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Upload logs and outputs
+      - name: Collect main mod jar
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p dist
+          main_jar="$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-dev.jar' ! -name '*-sources.jar' | head -n 1)"
+          if [ -n "$main_jar" ]; then
+            cp "$main_jar" "dist/$(basename "$main_jar")"
+            echo "artifact_name=$(basename "$main_jar")" >> "$GITHUB_ENV"
+          fi
+
+      - name: Upload main mod jar
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: thetitans-mod
+          path: dist/*
+          if-no-files-found: ignore
+
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -71,8 +90,14 @@ jobs:
           path: |
             build.log
             compile-errors.txt
-            build/reports/**
-            build/libs/**
+          if-no-files-found: ignore
+
+      - name: Upload main mod jar
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: thetitans-mod
+          path: dist/thetitans.jar
           if-no-files-found: ignore
 
       - name: Fail workflow if build failed
