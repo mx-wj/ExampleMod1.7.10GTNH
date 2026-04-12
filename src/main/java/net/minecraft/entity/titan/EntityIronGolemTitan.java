@@ -30,8 +30,6 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
-import net.minecraft.theTitans.perf.PerfSection;
-import net.minecraft.theTitans.perf.TitansPerf;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
@@ -70,6 +68,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.theTitans.perf.PerfSection;
+import net.minecraft.theTitans.perf.TitansPerf;
 import net.minecraft.theTitans.DamageSourceExtra;
 import net.minecraft.theTitans.TheTitans;
 import net.minecraft.theTitans.TitanItems;
@@ -134,7 +134,7 @@ implements IAnimatedEntity {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, (Object)0);
     }
 
     @Override
@@ -181,170 +181,244 @@ implements IAnimatedEntity {
 
     @Override
     public void onLivingUpdate() {
-        long perfNs = TitansPerf.begin();
+        long perfSuper = TitansPerf.begin();
         try {
-        long perfSuperNs = TitansPerf.begin();
-        super.onLivingUpdate();
-        TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuperNs);
+            super.onLivingUpdate();
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuper);
+        }
         this.setSize(24.0f, 64.0f);
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(2000.0);
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(500000.0);
-        if (this.animID == 10) {
-            if (this.animTick == 30 || this.animTick == 70) {
-                this.func_145780_a(0, 0, 0, Blocks.stone);
-            }
-            if (this.animTick == 190) {
-                this.playSound("thetitans:titanFall", 20.0f, 0.9f);
-                this.playSound("thetitans:groundSmash", 20.0f, 1.0f);
-                this.shakeNearbyPlayerCameras(40000.0);
-            }
-            if (this.animTick == 200) {
-                this.playSound("thetitans:distantLargeFall", 10000.0f, 0.5f);
+        long perfAnim10 = TitansPerf.begin();
+        int anim10Footfalls = 0;
+        int anim10Falls = 0;
+        try {
+            if (this.animID == 10) {
+                if (this.animTick == 30 || this.animTick == 70) {
+                    ++anim10Footfalls;
+                    this.func_145780_a(0, 0, 0, Blocks.stone);
+                }
+                if (this.animTick == 190) {
+                    ++anim10Falls;
+                    this.playSound("thetitans:titanFall", 20.0f, 0.9f);
+                    this.playSound("thetitans:groundSmash", 20.0f, 1.0f);
+                    this.shakeNearbyPlayerCameras(40000.0);
+                }
+                if (this.animTick == 200) {
+                    ++anim10Falls;
+                    this.playSound("thetitans:distantLargeFall", 10000.0f, 0.5f);
+                }
             }
         }
-        if (!this.worldObj.isRemote && this.getAnimID() == 5 && this.getAnimTick() == 34 && this.getAttackTarget() != null) {
-            this.attackEntityAsMob((Entity)this.getAttackTarget());
-            Vec3 vec3 = this.getLook(1.0f);
-            double d5 = this.getAttackTarget().posX - (this.posX + vec3.xCoord * 30.0);
-            double d6 = this.getAttackTarget().posY - (this.posY + 30.0);
-            double d7 = this.getAttackTarget().posZ - (this.posZ + vec3.zCoord * 30.0);
-            EntityTitanFireball entitylargefireball = new EntityTitanFireball(this.worldObj, (EntityLivingBase)this, d5, d6, d7, 1);
-            entitylargefireball.posX = this.posX + vec3.xCoord * 30.0;
-            entitylargefireball.posY = this.posY + 30.0;
-            entitylargefireball.posZ = this.posZ + vec3.zCoord * 30.0;
-            this.worldObj.spawnEntityInWorld((Entity)entitylargefireball);
-            entitylargefireball.setFireballID(5);
-            entitylargefireball.playSound("thetitans:titanSwing", 10.0f, 1.0f);
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.anim10", perfAnim10);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.anim10Footfalls", anim10Footfalls);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.anim10Falls", anim10Falls);
+        }
+        long perfRanged = TitansPerf.begin();
+        int rangedShots = 0;
+        try {
+            if (!this.worldObj.isRemote && this.getAnimID() == 5 && this.getAnimTick() == 34 && this.getAttackTarget() != null) {
+                this.attackEntityAsMob((Entity)this.getAttackTarget());
+                Vec3 vec3 = this.getLook(1.0f);
+                double d5 = this.getAttackTarget().posX - (this.posX + vec3.xCoord * 30.0);
+                double d6 = this.getAttackTarget().posY - (this.posY + 30.0);
+                double d7 = this.getAttackTarget().posZ - (this.posZ + vec3.zCoord * 30.0);
+                EntityTitanFireball entitylargefireball = new EntityTitanFireball(this.worldObj, (EntityLivingBase)this, d5, d6, d7, 1);
+                entitylargefireball.posX = this.posX + vec3.xCoord * 30.0;
+                entitylargefireball.posY = this.posY + 30.0;
+                entitylargefireball.posZ = this.posZ + vec3.zCoord * 30.0;
+                this.worldObj.spawnEntityInWorld((Entity)entitylargefireball);
+                entitylargefireball.setFireballID(5);
+                entitylargefireball.playSound("thetitans:titanSwing", 10.0f, 1.0f);
+                ++rangedShots;
+            }
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.rangedAttack", perfRanged);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.rangedShots", rangedShots);
         }
         if (this.deathTicks > 0) {
             this.motionX *= 0.0;
             this.motionZ *= 0.0;
         }
-        if (!AnimationAPI.isEffectiveClient() && this.getAttackTarget() != null && this.getAnimID() == 0 && this.ticksExisted > 5) {
-            double d0 = this.getDistanceSqToEntity((Entity)this.getAttackTarget());
-            if (d0 < this.getMeleeRange()) {
-                if (this.getAttackTarget() instanceof EntityTitan || this.getAttackTarget().height >= 6.0f || this.getAttackTarget().posY > this.posY + 6.0) {
-                    AnimationAPI.sendAnimPacket(this, 1);
-                    this.setAnimID(1);
-                } else {
-                    switch (this.rand.nextInt(4)) {
+        long perfAttackDecision = TitansPerf.begin();
+        int meleeAnimTriggers = 0;
+        int rangedAnimTriggers = 0;
+        try {
+            if (!AnimationAPI.isEffectiveClient() && this.getAttackTarget() != null && this.getAnimID() == 0 && this.ticksExisted > 5) {
+                double d0 = this.getDistanceSqToEntity((Entity)this.getAttackTarget());
+                if (d0 < this.getMeleeRange()) {
+                    if (this.getAttackTarget() instanceof EntityTitan || this.getAttackTarget().height >= 6.0f || this.getAttackTarget().posY > this.posY + 6.0) {
+                        AnimationAPI.sendAnimPacket(this, 1);
+                        this.setAnimID(1);
+                        ++meleeAnimTriggers;
+                    } else {
+                        switch (this.rand.nextInt(4)) {
+                            case 0: {
+                                AnimationAPI.sendAnimPacket(this, 6);
+                                this.setAnimID(6);
+                                break;
+                            }
+                            case 1: {
+                                AnimationAPI.sendAnimPacket(this, 7);
+                                this.setAnimID(7);
+                                break;
+                            }
+                            case 2: {
+                                AnimationAPI.sendAnimPacket(this, 8);
+                                this.setAnimID(8);
+                                break;
+                            }
+                            case 3: {
+                                AnimationAPI.sendAnimPacket(this, 9);
+                                this.setAnimID(9);
+                            }
+                        }
+                        ++meleeAnimTriggers;
+                    }
+                } else if (this.getAnimID() == 0 && this.getRNG().nextInt(160) == 0) {
+                    switch (this.rand.nextInt(2)) {
                         case 0: {
-                            AnimationAPI.sendAnimPacket(this, 6);
-                            this.setAnimID(6);
+                            AnimationAPI.sendAnimPacket(this, 5);
+                            this.setAnimID(5);
                             break;
                         }
                         case 1: {
-                            AnimationAPI.sendAnimPacket(this, 7);
-                            this.setAnimID(7);
-                            break;
-                        }
-                        case 2: {
-                            AnimationAPI.sendAnimPacket(this, 8);
-                            this.setAnimID(8);
-                            break;
-                        }
-                        case 3: {
-                            AnimationAPI.sendAnimPacket(this, 9);
-                            this.setAnimID(9);
+                            AnimationAPI.sendAnimPacket(this, 5);
+                            this.setAnimID(5);
                         }
                     }
-                }
-            } else if (this.getAnimID() == 0 && this.getRNG().nextInt(160) == 0) {
-                switch (this.rand.nextInt(2)) {
-                    case 0: {
-                        AnimationAPI.sendAnimPacket(this, 5);
-                        this.setAnimID(5);
-                        break;
-                    }
-                    case 1: {
-                        AnimationAPI.sendAnimPacket(this, 5);
-                        this.setAnimID(5);
-                    }
+                    ++rangedAnimTriggers;
                 }
             }
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.attackDecision", perfAttackDecision);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.meleeAnimTriggers", meleeAnimTriggers);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.rangedAnimTriggers", rangedAnimTriggers);
         }
         if (this.motionY > 1.0) {
             this.motionY = 1.0;
         }
         this.meleeTitan = true;
-        this.setCustomNameTag("\u00a77\u00a7lUltima Iron Golem Titan");
-        long perfScanNs = TitansPerf.begin();
-        List list1 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 96.0, 96.0));
-        TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.range96Scan", perfScanNs);
-        TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.range96Entities", list1 == null ? 0 : list1.size());
-        if (list1 != null && !list1.isEmpty()) {
-            for (int i1 = 0; i1 < list1.size(); ++i1) {
-                Entity entity = (Entity)list1.get(i1);
-                if (entity == null || !(entity instanceof EntityIronGolem)) continue;
-                if (((EntityIronGolem)entity).isCollidedHorizontally) {
-                    ((EntityIronGolem)entity).motionY = 0.25;
+        this.setCustomNameTag("§7§lUltima Iron Golem Titan");
+        long perfRange96 = TitansPerf.begin();
+        int nearbyEntitiesSeen = 0;
+        int nearbyGolemsHandled = 0;
+        int nearbyGolemsBoosted = 0;
+        try {
+            List list1 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 96.0, 96.0));
+            if (list1 != null && !list1.isEmpty()) {
+                nearbyEntitiesSeen = list1.size();
+                for (int i1 = 0; i1 < list1.size(); ++i1) {
+                    Entity entity = (Entity)list1.get(i1);
+                    if (entity == null || !(entity instanceof EntityIronGolem)) continue;
+                    ++nearbyGolemsHandled;
+                    if (((EntityIronGolem)entity).isCollidedHorizontally) {
+                        ((EntityIronGolem)entity).motionY = 0.25;
+                        ++nearbyGolemsBoosted;
+                    }
+                    if (((EntityIronGolem)entity).getAttackTarget() == null && ((EntityIronGolem)entity).getDistanceSqToEntity((Entity)this) > 4096.0) {
+                        ((EntityIronGolem)entity).getLookHelper().setLookPositionWithEntity((Entity)this, 180.0f, 40.0f);
+                        ((EntityIronGolem)entity).getMoveHelper().setMoveTo(this.posX, this.posY, this.posZ, 1.0);
+                    }
+                    if (((EntityIronGolem)entity).ticksExisted != 20) continue;
+                    EntityIronGolemTitan.addTitanTargetingTaskToEntity(this);
                 }
-                if (((EntityIronGolem)entity).getAttackTarget() == null && ((EntityIronGolem)entity).getDistanceSqToEntity((Entity)this) > 4096.0) {
-                    ((EntityIronGolem)entity).getLookHelper().setLookPositionWithEntity((Entity)this, 180.0f, 40.0f);
-                    ((EntityIronGolem)entity).getMoveHelper().setMoveTo(this.posX, this.posY, this.posZ, 1.0);
-                }
-                if (((EntityIronGolem)entity).ticksExisted != 20) continue;
-                EntityIronGolemTitan.addTitanTargetingTaskToEntity(this);
             }
         }
-        if (this.rand.nextInt(this.getMinionSpawnRate()) == 0 && this.getHealth() > 0.0f && !this.worldObj.isRemote) {
-            EntityIronGolem entitychicken = new EntityIronGolem(this.worldObj);
-            entitychicken.setLocationAndAngles(this.posX + ((double)this.rand.nextFloat() - 0.5) * (double)this.width, this.posY + (double)this.getEyeHeight(), this.posZ + ((double)this.rand.nextFloat() - 0.5) * (double)this.width, this.rotationYaw, 0.0f);
-            entitychicken.setPlayerCreated(this.isPlayerCreated());
-            this.worldObj.spawnEntityInWorld((Entity)entitychicken);
-            entitychicken.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(2000.0);
-            entitychicken.setHealth(2000.0f);
-            entitychicken.setCustomNameTag("Reinforced Iron Golem");
-            EntityIronGolemTitan.addTitanTargetingTaskToEntity((EntityCreature)entitychicken);
-            entitychicken.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(32.0);
-            entitychicken.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1.0);
+        finally {
+            TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.range96Scan", perfRange96);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.range96Entities", nearbyEntitiesSeen);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.range96Golems", nearbyGolemsHandled);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.range96Boosted", nearbyGolemsBoosted);
         }
-        if (this.attackTimer > 0) {
-            --this.attackTimer;
-        }
-        if (this.holdRoseTick > 0) {
-            --this.holdRoseTick;
-        }
-    
+        long perfSpawn = TitansPerf.begin();
+        int minionsSpawned = 0;
+        try {
+            if (this.rand.nextInt(this.getMinionSpawnRate()) == 0 && this.getHealth() > 0.0f && !this.worldObj.isRemote) {
+                EntityIronGolem entitychicken = new EntityIronGolem(this.worldObj);
+                entitychicken.setLocationAndAngles(this.posX + ((double)this.rand.nextFloat() - 0.5) * (double)this.width, this.posY + (double)this.getEyeHeight(), this.posZ + ((double)this.rand.nextFloat() - 0.5) * (double)this.width, this.rotationYaw, 0.0f);
+                entitychicken.setPlayerCreated(this.isPlayerCreated());
+                this.worldObj.spawnEntityInWorld((Entity)entitychicken);
+                entitychicken.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(2000.0);
+                entitychicken.setHealth(2000.0f);
+                entitychicken.setCustomNameTag("Reinforced Iron Golem");
+                EntityIronGolemTitan.addTitanTargetingTaskToEntity((EntityCreature)entitychicken);
+                entitychicken.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(32.0);
+                entitychicken.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1.0);
+                ++minionsSpawned;
+            }
         }
         finally {
-            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.minionSpawn", perfSpawn);
+            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.minionsSpawned", minionsSpawned);
+        }
+        long perfTimers = TitansPerf.begin();
+        try {
+            if (this.attackTimer > 0) {
+                --this.attackTimer;
+            }
+            if (this.holdRoseTick > 0) {
+                --this.holdRoseTick;
+            }
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.timers", perfTimers);
         }
     }
 
     @Override
     protected void updateAITasks() {
-        long perfNs = TitansPerf.begin();
+        long perfHome = TitansPerf.begin();
+        int foundVillage = 0;
         try {
-        List list11;
-        if (--this.homeCheckTimer <= 0) {
-            this.homeCheckTimer = 70 + this.rand.nextInt(50);
-            this.villageObj = this.worldObj.villageCollectionObj.findNearestVillage(MathHelper.floor_double((double)this.posX), MathHelper.floor_double((double)this.posY), MathHelper.floor_double((double)this.posZ), 32);
-            if (this.villageObj == null) {
-                this.detachHome();
-            } else {
-                ChunkCoordinates chunkcoordinates = this.villageObj.getCenter();
-                this.setHomeArea(chunkcoordinates.posX, chunkcoordinates.posY, chunkcoordinates.posZ, (int)((float)this.villageObj.getVillageRadius() * 0.6f));
+            if (--this.homeCheckTimer <= 0) {
+                this.homeCheckTimer = 70 + this.rand.nextInt(50);
+                this.villageObj = this.worldObj.villageCollectionObj.findNearestVillage(MathHelper.floor_double((double)this.posX), MathHelper.floor_double((double)this.posY), MathHelper.floor_double((double)this.posZ), 32);
+                if (this.villageObj == null) {
+                    this.detachHome();
+                } else {
+                    ChunkCoordinates chunkcoordinates = this.villageObj.getCenter();
+                    this.setHomeArea(chunkcoordinates.posX, chunkcoordinates.posY, chunkcoordinates.posZ, (int)((float)this.villageObj.getVillageRadius() * 0.6f));
+                    foundVillage = 1;
+                }
             }
-        }
-        long perfBoxNs = TitansPerf.begin();
-        if ((list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox)) != null && !list11.isEmpty()) {
-            TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.boxEntities", list11.size());
-            for (int i1 = 0; i1 < list11.size(); ++i1) {
-                Entity entity = (Entity)list11.get(i1);
-                if (!(entity instanceof EntityLiving) && (!(entity instanceof EntityPlayer) || this.isPlayerCreated()) || !entity.onGround || entity instanceof EntityTitan || entity instanceof EntityIronGolem) continue;
-                float f = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-                entity.attackEntityFrom(DamageSourceExtra.causeSquishingDamage((Entity)this), f / 2.0f);
-            }
-        }
-        TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.boxScan", perfBoxNs);
-        long perfSuperAiNs = TitansPerf.begin();
-        super.updateAITasks();
-        TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.super", perfSuperAiNs);
-    
         }
         finally {
-            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.homeCheck", perfHome);
+            TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.villageFound", foundVillage);
+        }
+        long perfBox = TitansPerf.begin();
+        int boxEntities = 0;
+        int squished = 0;
+        try {
+            List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
+            if (list11 != null && !list11.isEmpty()) {
+                boxEntities = list11.size();
+                for (int i1 = 0; i1 < list11.size(); ++i1) {
+                    Entity entity = (Entity)list11.get(i1);
+                    if (!(entity instanceof EntityLiving) && (!(entity instanceof EntityPlayer) || this.isPlayerCreated()) || !entity.onGround || entity instanceof EntityTitan || entity instanceof EntityIronGolem) continue;
+                    float f = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+                    entity.attackEntityFrom(DamageSourceExtra.causeSquishingDamage((Entity)this), f / 2.0f);
+                    ++squished;
+                }
+            }
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.boxScan", perfBox);
+            TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.boxEntities", boxEntities);
+            TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.squished", squished);
+        }
+        long perfSuper = TitansPerf.begin();
+        try {
+            super.updateAITasks();
+        }
+        finally {
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.super", perfSuper);
         }
     }
 

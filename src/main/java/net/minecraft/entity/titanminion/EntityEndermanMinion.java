@@ -117,6 +117,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 
 public class EntityEndermanMinion
 extends EntityEnderman
@@ -634,6 +635,9 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         long perfNs = TitansPerf.begin();
         try {
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {

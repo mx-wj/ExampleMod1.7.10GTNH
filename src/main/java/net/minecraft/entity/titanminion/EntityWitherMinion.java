@@ -86,6 +86,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 import thehippomaster.MutantCreatures.MutantSkeleton;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 
 public class EntityWitherMinion
 extends EntityMob
@@ -274,6 +275,9 @@ IMinion {
     }
 
     protected void updateAITasks() {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         long perfNs = TitansPerf.begin();
         try {
         Entity entity;

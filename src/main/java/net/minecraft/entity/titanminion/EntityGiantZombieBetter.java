@@ -25,8 +25,6 @@
  *  thehippomaster.MutantCreatures.MutantZombie
  */
 package net.minecraft.entity.titanminion;
-import net.minecraft.theTitans.perf.PerfSection;
-import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.common.Loader;
 import java.util.Collections;
@@ -61,6 +59,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import thehippomaster.MutantCreatures.MutantZombie;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 
 public class EntityGiantZombieBetter
 extends EntityGiantZombie
@@ -156,8 +155,6 @@ implements IMinion {
     }
 
     public void onLivingUpdate() {
-        long perfNs = TitansPerf.begin();
-        try {
         int k;
         int j;
         int i;
@@ -174,11 +171,6 @@ implements IMinion {
         this.ignoreFrustumCheck = true;
         if (this.motionX != 0.0 && this.motionZ != 0.0 && this.rand.nextInt(5) == 0 && (block = this.worldObj.getBlock(i = MathHelper.floor_double((double)this.posX), j = MathHelper.floor_double((double)(this.posY - (double)0.2f - (double)this.yOffset)), k = MathHelper.floor_double((double)this.posZ))).getMaterial() != Material.air) {
             this.worldObj.spawnParticle("blockcrack_" + Block.getIdFromBlock((Block)block) + "_" + this.worldObj.getBlockMetadata(i, j, k), this.posX + ((double)this.rand.nextFloat() - 0.5) * (double)this.width, this.boundingBox.minY + 0.1, this.posZ + ((double)this.rand.nextFloat() - 0.5) * (double)this.width, 4.0 * ((double)this.rand.nextFloat() - 0.5), 0.5, ((double)this.rand.nextFloat() - 0.5) * 4.0);
-        }
-    
-        }
-        finally {
-            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
         }
     }
 
@@ -302,8 +294,9 @@ implements IMinion {
     }
 
     protected void updateAITasks() {
-        long perfNs = TitansPerf.begin();
-        try {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         block12: {
             block10: {
                 block11: {
@@ -361,11 +354,6 @@ implements IMinion {
             }
         }
         super.updateAITasks();
-    
-        }
-        finally {
-            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
-        }
     }
 
     protected void fall(float par1) {

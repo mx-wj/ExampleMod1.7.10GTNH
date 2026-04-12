@@ -84,6 +84,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 
 public class EntityGhastMinion
 extends EntityCreature
@@ -242,6 +243,9 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         long perfNs = TitansPerf.begin();
         try {
         byte b0;

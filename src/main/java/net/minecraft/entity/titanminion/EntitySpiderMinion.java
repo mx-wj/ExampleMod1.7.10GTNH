@@ -114,6 +114,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 
 public class EntitySpiderMinion
 extends EntitySpider
@@ -876,6 +877,9 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         long perfNs = TitansPerf.begin();
         try {
         EntityLivingBase e;

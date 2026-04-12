@@ -118,6 +118,7 @@ import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.entity.titan.EntityEnderColossusCrystal;
 import net.minecraft.entity.titan.EntitySilverfishTitan;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 import net.minecraft.entity.titan.EntityTitan;
 import net.minecraft.entity.titan.EntityTitanSpirit;
 import net.minecraft.entity.titan.EntityWitherzilla;
@@ -829,6 +830,9 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         long perfNs = TitansPerf.begin();
         try {
         EntityLivingBase e;

@@ -93,6 +93,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 
 public class EntityBlazeMinion
 extends EntityBlaze
@@ -728,6 +729,9 @@ ITemplar {
     }
 
     protected void updateAITasks() {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         long perfNs = TitansPerf.begin();
         try {
         EntityLivingBase e;

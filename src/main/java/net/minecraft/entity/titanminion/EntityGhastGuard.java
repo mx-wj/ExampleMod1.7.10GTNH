@@ -26,8 +26,6 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titanminion;
-import net.minecraft.theTitans.perf.PerfSection;
-import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -62,6 +60,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 
 public class EntityGhastGuard
 extends EntityCreature
@@ -191,8 +190,9 @@ IMinion {
     }
 
     protected void updateAITasks() {
-        long perfNs = TitansPerf.begin();
-        try {
+        if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+            return;
+        }
         byte b0;
         byte b1;
         this.explosionStrength = 3;
@@ -314,11 +314,6 @@ IMinion {
             this.dataWatcher.updateObject(16, (Object)b0);
         }
         super.updateAITasks();
-    
-        }
-        finally {
-            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
-        }
     }
 
     private boolean isCourseTraversable(double p_70790_1_, double p_70790_3_, double p_70790_5_, double p_70790_7_) {
@@ -339,7 +334,7 @@ IMinion {
 
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(16, (Object)Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, (Object)0);
     }
 
     protected void applyEntityAttributes() {
