@@ -49,6 +49,16 @@ public final class TitanOptimizationHelper {
         return list == null ? 0 : list.size();
     }
 
+    public static int countShellVolume(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        int dx = Math.max(1, maxX - minX + 1);
+        int dy = Math.max(1, maxY - minY + 1);
+        int dz = Math.max(1, maxZ - minZ + 1);
+        if (dx == 1 || dy == 1 || dz == 1) {
+            return dx * dy * dz;
+        }
+        return 2 * (dx * dy + dx * dz + dy * dz) - 4 * (dx + dy + dz) + 8;
+    }
+
     public static EntityLivingBase coerceLivingTarget(Entity entity) {
         return entity instanceof EntityLivingBase ? (EntityLivingBase) entity : null;
     }
