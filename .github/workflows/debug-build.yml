@@ -64,15 +64,27 @@ jobs:
           exit 0
 
       - name: Collect main mod jar
-        if: always()
-        shell: bash
-        run: |
-          mkdir -p dist
-          main_jar="$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-dev.jar' ! -name '*-sources.jar' | head -n 1)"
-          if [ -n "$main_jar" ]; then
-            cp "$main_jar" "dist/$(basename "$main_jar")"
-            echo "artifact_name=$(basename "$main_jar")" >> "$GITHUB_ENV"
-          fi
+  if: always()
+  shell: bash
+  run: |
+    mkdir -p dist
+
+    if [ ! -d build/libs ]; then
+      echo "build/libs does not exist, likely because build failed or jar task did not run."
+      exit 0
+    fi
+
+    main_jar="$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-dev.jar' ! -name '*-sources.jar' | head -n 1 || true)"
+
+    if [ -z "$main_jar" ]; then
+      echo "No main mod jar found in build/libs"
+      ls -lah build/libs || true
+      exit 0
+    fi
+
+    cp "$main_jar" "dist/$(basename "$main_jar")"
+    echo "artifact_name=$(basename "$main_jar")" >> "$GITHUB_ENV"
+    echo "Collected main jar: $main_jar"
 
       - name: Upload main mod jar
         if: always()
