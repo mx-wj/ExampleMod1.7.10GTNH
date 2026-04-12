@@ -66,4 +66,22 @@ public final class TitanOptimizationHelper {
     public static boolean canDropAsItem(Block block) {
         return block != null;
     }
+
+    public static boolean isWithinWorldHeight(int y) {
+        return y >= 0 && y < 256;
+    }
+
+    public static boolean shouldAttemptTitanDestroy(IBlockAccess world, int x, int y, int z, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        if (!isWithinWorldHeight(y)) {
+            return false;
+        }
+        if (world.isAirBlock(x, y, z)) {
+            return false;
+        }
+        return shouldConsiderForTitanFallingBlock(world, x, y, z, minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    public static long packBlockPos(int x, int y, int z) {
+        return ((long)(x & 0x3FFFFFF) << 38) | ((long)(z & 0x3FFFFFF) << 12) | (long)(y & 0xFFF);
+    }
 }
