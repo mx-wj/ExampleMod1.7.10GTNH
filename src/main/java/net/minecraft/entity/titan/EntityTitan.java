@@ -715,7 +715,7 @@ IBossDisplayData {
     }
 
     public void setWaiting(boolean p_82215_1_) {
-        this.dataWatcher.updateObject(23, (Object)(p_82215_1_ ? (byte)1 : 0));
+        this.dataWatcher.updateObject(23, (Object)Byte.valueOf((byte)(p_82215_1_ ? 1 : 0)));
     }
 
     public int getInvulTime() {

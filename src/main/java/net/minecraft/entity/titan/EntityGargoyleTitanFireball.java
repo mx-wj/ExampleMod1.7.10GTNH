@@ -163,8 +163,8 @@ extends EntityFireball {
     }
 
     protected void entityInit() {
-        this.dataWatcher.addObject(10, (Object)0);
-        this.dataWatcher.addObject(11, (Object)0);
+        this.dataWatcher.addObject(10, (Object)Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(11, (Object)Byte.valueOf((byte)0));
     }
 
     public int getBlockType() {
