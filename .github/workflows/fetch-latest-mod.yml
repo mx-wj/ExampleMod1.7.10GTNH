@@ -1,0 +1,52 @@
+name: Fetch Latest Mod Artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: Find latest successful Debug Build run
+        id: find_run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          run_id="$(
+            gh api \
+              "/repos/${{ github.repository }}/actions/workflows/debug-build.yml/runs?branch=master&status=success&per_page=1" \
+              --jq '.workflow_runs[0].id'
+          )"
+
+          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+            echo "No successful run found for debug-build.yml on master"
+            exit 1
+          fi
+
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "Latest successful run id: $run_id"
+
+      - name: Download thetitans-mod artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          mkdir -p fetched
+          gh run download "${{ steps.find_run.outputs.run_id }}" \
+            --name "thetitans-mod" \
+            --dir fetched
+
+          echo "Downloaded files:"
+          find fetched -maxdepth 3 -type f | sort
+
+      - name: Upload fetched artifact again
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetched-thetitans-mod
+          path: fetched/**
+          if-no-files-found: error
