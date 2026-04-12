@@ -335,32 +335,45 @@ implements IRangedAttackMob {
         List list;
         ArrayList listp;
         if (!(this.worldObj.provider instanceof WorldProviderVoid) && (this.ticksExisted & 31) == 0) {
-            WorldServer worldserver = MinecraftServer.getServer().worldServers[0];
-            WorldInfo worldinfo = worldserver.getWorldInfo();
-            if (this.getAttackTarget() != null && this.getAttackTarget() instanceof EntityEnderColossus) {
-                worldinfo.setRainTime(0);
-                worldinfo.setThunderTime(0);
-                worldinfo.setRaining(false);
-                worldinfo.setThundering(false);
-            } else {
-                worldinfo.setRainTime(9999999);
-                worldinfo.setThunderTime(1000000);
-                worldinfo.setRaining(true);
-                worldinfo.setThundering(true);
+            long perfWeatherNs = TitansPerf.begin();
+            try {
+                WorldServer worldserver = MinecraftServer.getServer().worldServers[0];
+                WorldInfo worldinfo = worldserver.getWorldInfo();
+                if (this.getAttackTarget() != null && this.getAttackTarget() instanceof EntityEnderColossus) {
+                    worldinfo.setRainTime(0);
+                    worldinfo.setThunderTime(0);
+                    worldinfo.setRaining(false);
+                    worldinfo.setThundering(false);
+                } else {
+                    worldinfo.setRainTime(9999999);
+                    worldinfo.setThunderTime(1000000);
+                    worldinfo.setRaining(true);
+                    worldinfo.setThundering(true);
+                }
+            } finally {
+                TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.weather", perfWeatherNs);
             }
         }
         if (!(this.worldObj.provider instanceof WorldProviderVoid)) {
             if ((this.ticksExisted & 7) == 0 && this.rand.nextInt(3) == 0) {
-                for (int l = 0; l < 4; ++l) {
-                    int i2 = MathHelper.floor_double((double)this.posX);
-                    int j2 = MathHelper.floor_double((double)this.posY);
-                    int k = MathHelper.floor_double((double)this.posZ);
-                    int i1 = i2 + MathHelper.getRandomIntegerInRange((Random)this.rand, (int)10, (int)100) * MathHelper.getRandomIntegerInRange((Random)this.rand, (int)-1, (int)1);
-                    int j1 = j2 + MathHelper.getRandomIntegerInRange((Random)this.rand, (int)10, (int)100) * MathHelper.getRandomIntegerInRange((Random)this.rand, (int)-1, (int)1);
-                    int k1 = k + MathHelper.getRandomIntegerInRange((Random)this.rand, (int)10, (int)100) * MathHelper.getRandomIntegerInRange((Random)this.rand, (int)-1, (int)1);
-                    EntityGammaLightning entitylightning = new EntityGammaLightning(this.worldObj, i1, j1, k1, this.rand.nextFloat(), this.rand.nextFloat(), this.rand.nextFloat());
-                    if (this.rand.nextInt(5) != 0 || !World.doesBlockHaveSolidTopSurface((IBlockAccess)this.worldObj, (int)i1, (int)(j1 - 1), (int)k1) || !this.worldObj.checkNoEntityCollision(entitylightning.boundingBox) || !this.worldObj.getCollidingBoundingBoxes((Entity)entitylightning, entitylightning.boundingBox).isEmpty() || this.worldObj.isAnyLiquid(entitylightning.boundingBox)) continue;
-                    this.worldObj.addWeatherEffect((Entity)entitylightning);
+                long perfLightningNs = TitansPerf.begin();
+                int lightningSpawned = 0;
+                try {
+                    for (int l = 0; l < 4; ++l) {
+                        int i2 = MathHelper.floor_double((double)this.posX);
+                        int j2 = MathHelper.floor_double((double)this.posY);
+                        int k = MathHelper.floor_double((double)this.posZ);
+                        int i1 = i2 + MathHelper.getRandomIntegerInRange((Random)this.rand, (int)10, (int)100) * MathHelper.getRandomIntegerInRange((Random)this.rand, (int)-1, (int)1);
+                        int j1 = j2 + MathHelper.getRandomIntegerInRange((Random)this.rand, (int)10, (int)100) * MathHelper.getRandomIntegerInRange((Random)this.rand, (int)-1, (int)1);
+                        int k1 = k + MathHelper.getRandomIntegerInRange((Random)this.rand, (int)10, (int)100) * MathHelper.getRandomIntegerInRange((Random)this.rand, (int)-1, (int)1);
+                        EntityGammaLightning entitylightning = new EntityGammaLightning(this.worldObj, i1, j1, k1, this.rand.nextFloat(), this.rand.nextFloat(), this.rand.nextFloat());
+                        if (this.rand.nextInt(5) != 0 || !World.doesBlockHaveSolidTopSurface((IBlockAccess)this.worldObj, (int)i1, (int)(j1 - 1), (int)k1) || !this.worldObj.checkNoEntityCollision(entitylightning.boundingBox) || !this.worldObj.getCollidingBoundingBoxes((Entity)entitylightning, entitylightning.boundingBox).isEmpty() || this.worldObj.isAnyLiquid(entitylightning.boundingBox)) continue;
+                        this.worldObj.addWeatherEffect((Entity)entitylightning);
+                        ++lightningSpawned;
+                    }
+                } finally {
+                    TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.lightning", perfLightningNs);
+                    TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.lightningSpawned", lightningSpawned);
                 }
             }
         } else {
@@ -369,29 +382,41 @@ implements IRangedAttackMob {
             }
             listp = Lists.newArrayList((Iterable)this.worldObj.loadedEntityList);
             if (!this.worldObj.isRemote && listp != null && !listp.isEmpty() && this.rand.nextInt(4) == 0) {
-                for (int i1 = 0; i1 < listp.size(); ++i1) {
-                    Entity entity2 = (Entity)listp.get(i1);
-                    if (entity2 == null || !entity2.isEntityAlive()) continue;
-                    if (entity2 instanceof EntityWitherTurret && !((EntityWitherTurret)entity2).isPlayerCreated()) {
+                long perfVoidLoopNs = TitansPerf.begin();
+                int loadedSeen = listp.size();
+                int voidResets = 0;
+                try {
+                    for (int i1 = 0; i1 < listp.size(); ++i1) {
+                        Entity entity2 = (Entity)listp.get(i1);
+                        if (entity2 == null || !entity2.isEntityAlive()) continue;
+                        if (entity2 instanceof EntityWitherTurret && !((EntityWitherTurret)entity2).isPlayerCreated()) {
+                            this.setPosition(0.0, 200.0, 0.0);
+                            this.rotationYawHead = 0.0f;
+                            this.rotationYaw = 0.0f;
+                            this.renderYawOffset = 0.0f;
+                            this.setAttackTarget(null);
+                            ++voidResets;
+                        }
+                        if (entity2 instanceof EntityWitherTurretGround && !((EntityWitherTurretGround)entity2).isPlayerCreated()) {
+                            this.setPosition(0.0, 200.0, 0.0);
+                            this.rotationYawHead = 0.0f;
+                            this.rotationYaw = 0.0f;
+                            this.renderYawOffset = 0.0f;
+                            this.setAttackTarget(null);
+                            ++voidResets;
+                        }
+                        if (!(entity2 instanceof EntityWitherTurretMortar) || ((EntityWitherTurretMortar)entity2).isPlayerCreated()) continue;
                         this.setPosition(0.0, 200.0, 0.0);
                         this.rotationYawHead = 0.0f;
                         this.rotationYaw = 0.0f;
                         this.renderYawOffset = 0.0f;
                         this.setAttackTarget(null);
+                        ++voidResets;
                     }
-                    if (entity2 instanceof EntityWitherTurretGround && !((EntityWitherTurretGround)entity2).isPlayerCreated()) {
-                        this.setPosition(0.0, 200.0, 0.0);
-                        this.rotationYawHead = 0.0f;
-                        this.rotationYaw = 0.0f;
-                        this.renderYawOffset = 0.0f;
-                        this.setAttackTarget(null);
-                    }
-                    if (!(entity2 instanceof EntityWitherTurretMortar) || ((EntityWitherTurretMortar)entity2).isPlayerCreated()) continue;
-                    this.setPosition(0.0, 200.0, 0.0);
-                    this.rotationYawHead = 0.0f;
-                    this.rotationYaw = 0.0f;
-                    this.renderYawOffset = 0.0f;
-                    this.setAttackTarget(null);
+                } finally {
+                    TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.voidLoadedEntityLoop", perfVoidLoopNs);
+                    TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.voidLoadedEntitiesSeen", loadedSeen);
+                    TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.voidResets", voidResets);
                 }
             }
         }
@@ -405,46 +430,69 @@ implements IRangedAttackMob {
         this.worldObj.setWorldTime(18000L);
         listp = Lists.newArrayList((Iterable)this.worldObj.playerEntities);
         if (listp != null && !listp.isEmpty() && (this.ticksExisted % 40 == 0)) {
-            for (int i1 = 0; i1 < listp.size(); ++i1) {
-                Entity entity3 = (Entity)listp.get(i1);
-                if (entity3 == null || !(entity3 instanceof EntityPlayer) || this.rand.nextInt(100) != 0) continue;
-                this.playLivingSound();
-                if (!(this.worldObj.provider instanceof WorldProviderVoid)) {
-                    ((EntityPlayer)entity3).attackEntityFrom(new DamageSource("generic").setDamageAllowedInCreativeMode().setDamageBypassesArmor().setDamageIsAbsolute(), 10.0f);
-                    ((EntityPlayer)entity3).addChatMessage((IChatComponent)new ChatComponentText(StatCollector.translateToLocal((String)("dialog.witherzilla.taunt." + this.rand.nextInt(6)))));
-                    continue;
+            long perfPlayerLoopNs = TitansPerf.begin();
+            int playersSeen = listp.size();
+            int playersAffected = 0;
+            try {
+                for (int i1 = 0; i1 < listp.size(); ++i1) {
+                    Entity entity3 = (Entity)listp.get(i1);
+                    if (entity3 == null || !(entity3 instanceof EntityPlayer) || this.rand.nextInt(100) != 0) continue;
+                    this.playLivingSound();
+                    ++playersAffected;
+                    if (!(this.worldObj.provider instanceof WorldProviderVoid)) {
+                        ((EntityPlayer)entity3).attackEntityFrom(new DamageSource("generic").setDamageAllowedInCreativeMode().setDamageBypassesArmor().setDamageIsAbsolute(), 10.0f);
+                        ((EntityPlayer)entity3).addChatMessage((IChatComponent)new ChatComponentText(StatCollector.translateToLocal((String)("dialog.witherzilla.taunt." + this.rand.nextInt(6)))));
+                        continue;
+                    }
+                    ((EntityPlayer)entity3).addChatMessage((IChatComponent)new ChatComponentText(StatCollector.translateToLocal((String)("dialog.witherzilla.plead." + this.rand.nextInt(6)))));
                 }
-                ((EntityPlayer)entity3).addChatMessage((IChatComponent)new ChatComponentText(StatCollector.translateToLocal((String)("dialog.witherzilla.plead." + this.rand.nextInt(6)))));
+            } finally {
+                TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.playerLoop", perfPlayerLoopNs);
+                TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.playersSeen", playersSeen);
+                TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.playersAffected", playersAffected);
             }
         }
         if ((this.ticksExisted & 2) == 0 && (list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 64.0, 96.0))) != null && !list.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid)) {
-            for (int i1 = 0; i1 < list.size(); ++i1) {
-                Entity entity4 = (Entity)list.get(i1);
-                if (entity4 != null && entity4.isEntityAlive() && this.getAttackTarget() != null && entity4 instanceof EntityWitherzillaMinion) {
-                    ((EntityWitherzillaMinion)entity4).setAttackTarget(this.getAttackTarget());
-                }
-                if (entity4 == null || !entity4.isEntityAlive() || entity4 instanceof EntityWitherzillaMinion || entity4 instanceof EntityWitherSkull || entity4 instanceof EntityWitherTurret || entity4 instanceof EntityWitherTurretGround || entity4 instanceof EntityWitherTurretMortar || entity4 instanceof EntityWeatherEffect || entity4 instanceof EntityWitherzillaMinion || entity4 instanceof EntityTitan || entity4 instanceof EntityTitanSpirit || entity4 instanceof EntityPlayer) continue;
-                if (this.getInvulTime() > 1) {
-                    if (entity4 instanceof EntityLivingBase) {
-                        if (entity4 instanceof EntityLiving) {
-                            ((EntityLiving)entity4).getNavigator().clearPathEntity();
+            long perfNearbyNs = TitansPerf.begin();
+            int nearbySeen = list.size();
+            int minionSync = 0;
+            int lightningTargets = 0;
+            try {
+                for (int i1 = 0; i1 < list.size(); ++i1) {
+                    Entity entity4 = (Entity)list.get(i1);
+                    if (entity4 != null && entity4.isEntityAlive() && this.getAttackTarget() != null && entity4 instanceof EntityWitherzillaMinion) {
+                        ((EntityWitherzillaMinion)entity4).setAttackTarget(this.getAttackTarget());
+                        ++minionSync;
+                    }
+                    if (entity4 == null || !entity4.isEntityAlive() || entity4 instanceof EntityWitherzillaMinion || entity4 instanceof EntityWitherSkull || entity4 instanceof EntityWitherTurret || entity4 instanceof EntityWitherTurretGround || entity4 instanceof EntityWitherTurretMortar || entity4 instanceof EntityWeatherEffect || entity4 instanceof EntityWitherzillaMinion || entity4 instanceof EntityTitan || entity4 instanceof EntityTitanSpirit || entity4 instanceof EntityPlayer) continue;
+                    if (this.getInvulTime() > 1) {
+                        if (entity4 instanceof EntityLivingBase) {
+                            if (entity4 instanceof EntityLiving) {
+                                ((EntityLiving)entity4).getNavigator().clearPathEntity();
+                            }
+                            entity4.motionY = 0.05 - this.motionY * 0.2;
+                            ((EntityLivingBase)entity4).hurtResistantTime = (int)this.rand.nextGaussian() * 20;
+                            ((EntityLivingBase)entity4).moveForward = (float)this.rand.nextGaussian();
+                            ((EntityLivingBase)entity4).moveStrafing = (float)this.rand.nextGaussian();
+                            ((EntityLivingBase)entity4).rotationYaw = ((EntityLivingBase)entity4).rotationYawHead += (float)this.rand.nextGaussian() * 10.0f;
+                            ((EntityLivingBase)entity4).renderYawOffset = ((EntityLivingBase)entity4).rotationYawHead;
+                            continue;
                         }
-                        entity4.motionY = 0.05 - this.motionY * 0.2;
-                        ((EntityLivingBase)entity4).hurtResistantTime = (int)this.rand.nextGaussian() * 20;
-                        ((EntityLivingBase)entity4).moveForward = (float)this.rand.nextGaussian();
-                        ((EntityLivingBase)entity4).moveStrafing = (float)this.rand.nextGaussian();
-                        ((EntityLivingBase)entity4).rotationYaw = ((EntityLivingBase)entity4).rotationYawHead += (float)this.rand.nextGaussian() * 10.0f;
-                        ((EntityLivingBase)entity4).renderYawOffset = ((EntityLivingBase)entity4).rotationYawHead;
+                        entity4.motionX = this.rand.nextGaussian() * 0.5;
+                        entity4.motionY = this.rand.nextGaussian() * 0.5;
+                        entity4.motionZ = this.rand.nextGaussian() * 0.5;
+                        entity4.rotationYaw += 10.0f;
+                        entity4.hurtResistantTime = (int)this.rand.nextGaussian() * 20;
                         continue;
                     }
-                    entity4.motionX = this.rand.nextGaussian() * 0.5;
-                    entity4.motionY = this.rand.nextGaussian() * 0.5;
-                    entity4.motionZ = this.rand.nextGaussian() * 0.5;
-                    entity4.rotationYaw += 10.0f;
-                    entity4.hurtResistantTime = (int)this.rand.nextGaussian() * 20;
-                    continue;
+                    this.doLightningAttackTo(entity4);
+                    ++lightningTargets;
                 }
-                this.doLightningAttackTo(entity4);
+            } finally {
+                TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.nearbyEntityLoop", perfNearbyNs);
+                TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.nearbyEntitiesSeen", nearbySeen);
+                TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.minionSync", minionSync);
+                TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.lightningTargets", lightningTargets);
             }
         }
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(Double.MAX_VALUE);
@@ -617,32 +665,46 @@ implements IRangedAttackMob {
             ArrayList listp;
             double d0;
             int i1;
+            long perfSuperNs = TitansPerf.begin();
             super.updateAITasks();
+            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.super", perfSuperNs);
             if (!(this.worldObj.provider instanceof WorldProviderVoid)) {
+                TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.omegaRefresh", 1);
                 this.omegacounter = 600;
             }
             if (this.ticksExisted % 400 == 0 && !(this.worldObj.provider instanceof WorldProviderVoid)) {
-                EntityPlayer entity2 = this.worldObj.getClosestPlayerToEntity((Entity)this, -1.0);
-                if (this.allPlayerList != null && !this.allPlayerList.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid) && this.getAttackTarget() == null && this.worldObj.provider == entity2.worldObj.provider) {
-                    for (i1 = 0; i1 < this.allPlayerList.size(); ++i1) {
-                        this.teleportToEntity((Entity)entity2, true);
-                        if (entity2.capabilities.disableDamage) continue;
-                        this.setAttackTarget((EntityLivingBase)entity2);
+                long perfTargetAcquireNs = TitansPerf.begin();
+                int teleports = 0;
+                int bans = 0;
+                try {
+                    EntityPlayer entity2 = this.worldObj.getClosestPlayerToEntity((Entity)this, -1.0);
+                    if (this.allPlayerList != null && !this.allPlayerList.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid) && this.getAttackTarget() == null && entity2 != null && this.worldObj.provider == entity2.worldObj.provider) {
+                        for (i1 = 0; i1 < this.allPlayerList.size(); ++i1) {
+                            this.teleportToEntity((Entity)entity2, true);
+                            ++teleports;
+                            if (entity2.capabilities.disableDamage) continue;
+                            this.setAttackTarget((EntityLivingBase)entity2);
+                        }
                     }
-                }
-                if (this.deathTicks <= 0 && this.allPlayerList != null && !this.allPlayerList.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid) && this.rand.nextInt(20) == 0 && this.getAttackTarget() != null && this.getAttackTarget() == entity2 && this.isArmored()) {
-                    for (i1 = 0; i1 < this.allPlayerList.size(); ++i1) {
-                        if (this.worldObj.isRemote) continue;
-                        MinecraftServer minecraftserver = MinecraftServer.getServer();
-                        GameProfile gameprofile = minecraftserver.func_152358_ax().func_152655_a(entity2.getCommandSenderName());
-                        EntityPlayerMP entityplayermp = minecraftserver.getConfigurationManager().func_152612_a(entity2.getCommandSenderName());
-                        if (entityplayermp == null || entity2.getCommandSenderName() == "Umbrella_Ghast") continue;
-                        this.attackChoosenEntity((Entity)entity2, 2.14748365E9f, 0);
-                        entity2.setDead();
-                        UserListBansEntry userlistbansentry = new UserListBansEntry(gameprofile, (Date)null, entity2.getCommandSenderName(), (Date)null, null);
-                        minecraftserver.getConfigurationManager().func_152608_h().func_152687_a((UserListEntry)userlistbansentry);
-                        entityplayermp.playerNetServerHandler.kickPlayerFromServer("You've been banned from this server by Witherzilla for being annoying.");
+                    if (entity2 != null && this.deathTicks <= 0 && this.allPlayerList != null && !this.allPlayerList.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid) && this.rand.nextInt(20) == 0 && this.getAttackTarget() != null && this.getAttackTarget() == entity2 && this.isArmored()) {
+                        for (i1 = 0; i1 < this.allPlayerList.size(); ++i1) {
+                            if (this.worldObj.isRemote) continue;
+                            MinecraftServer minecraftserver = MinecraftServer.getServer();
+                            GameProfile gameprofile = minecraftserver.func_152358_ax().func_152655_a(entity2.getCommandSenderName());
+                            EntityPlayerMP entityplayermp = minecraftserver.getConfigurationManager().func_152612_a(entity2.getCommandSenderName());
+                            if (entityplayermp == null || entity2.getCommandSenderName() == "Umbrella_Ghast") continue;
+                            this.attackChoosenEntity((Entity)entity2, 2.14748365E9f, 0);
+                            entity2.setDead();
+                            UserListBansEntry userlistbansentry = new UserListBansEntry(gameprofile, (Date)null, entity2.getCommandSenderName(), (Date)null, null);
+                            minecraftserver.getConfigurationManager().func_152608_h().func_152687_a((UserListEntry)userlistbansentry);
+                            entityplayermp.playerNetServerHandler.kickPlayerFromServer("You've been banned from this server by Witherzilla for being annoying.");
+                            ++bans;
+                        }
                     }
+                } finally {
+                    TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.targetAcquire", perfTargetAcquireNs);
+                    TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.teleports", teleports);
+                    TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.bans", bans);
                 }
             }
             if (this.getAttackTarget() != null && this.canAttack() && this.getAttackTarget() instanceof EntityLivingBase && (d0 = this.getDistanceSqToEntity((Entity)this.getAttackTarget())) < (double)(this.width * this.width + this.getAttackTarget().width * this.getAttackTarget().width) + 6000.0) {
@@ -680,40 +742,52 @@ implements IRangedAttackMob {
                 }
             }
             TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.loadedEntityLoop", perfLoadedNs);
-            for (i = 1; i < 3; ++i) {
-                int i12;
-                if (this.ticksExisted < this.field_82223_h[i - 1] || this.getAttackTarget() == null) continue;
-                this.field_82223_h[i - 1] = this.ticksExisted + 40 + this.rand.nextInt(40);
-                int k2 = i - 1;
-                int l2 = this.field_82224_i[i - 1];
-                this.field_82224_i[k2] = this.field_82224_i[i - 1] + 1;
-                if (l2 > 15) {
-                    for (int i11 = 0; i11 < 4; ++i11) {
-                        float f = 100.0f;
-                        float f1 = 20.0f;
-                        double d02 = MathHelper.getRandomDoubleInRange((Random)this.rand, (double)(this.posX - (double)f), (double)(this.posX + (double)f));
-                        double d1 = MathHelper.getRandomDoubleInRange((Random)this.rand, (double)(this.posY - (double)f1), (double)(this.posY + (double)f1));
-                        double d2 = MathHelper.getRandomDoubleInRange((Random)this.rand, (double)(this.posZ - (double)f), (double)(this.posZ + (double)f));
-                        this.launchWitherSkullToCoords(i + 1, d02, d1, d2, true);
-                    }
-                    this.field_82224_i[i - 1] = 0;
-                }
-                if ((i12 = this.getWatchedTargetId(i)) > 0) {
-                    Entity entity3 = this.worldObj.getEntityByID(i12);
-                    if (entity3 != null && entity3.isEntityAlive()) {
-                        this.launchWitherSkullToEntity(i + 1, (EntityLivingBase)entity3);
-                        this.field_82223_h[i - 1] = this.ticksExisted;
+            long perfHeadNs = TitansPerf.begin();
+            int headShots = 0;
+            int randomBursts = 0;
+            try {
+                for (i = 1; i < 3; ++i) {
+                    int i12;
+                    if (this.ticksExisted < this.field_82223_h[i - 1] || this.getAttackTarget() == null) continue;
+                    this.field_82223_h[i - 1] = this.ticksExisted + 40 + this.rand.nextInt(40);
+                    int k2 = i - 1;
+                    int l2 = this.field_82224_i[i - 1];
+                    this.field_82224_i[k2] = this.field_82224_i[i - 1] + 1;
+                    if (l2 > 15) {
+                        ++randomBursts;
+                        for (int i11 = 0; i11 < 4; ++i11) {
+                            float f = 100.0f;
+                            float f1 = 20.0f;
+                            double d02 = MathHelper.getRandomDoubleInRange((Random)this.rand, (double)(this.posX - (double)f), (double)(this.posX + (double)f));
+                            double d1 = MathHelper.getRandomDoubleInRange((Random)this.rand, (double)(this.posY - (double)f1), (double)(this.posY + (double)f1));
+                            double d2 = MathHelper.getRandomDoubleInRange((Random)this.rand, (double)(this.posZ - (double)f), (double)(this.posZ + (double)f));
+                            this.launchWitherSkullToCoords(i + 1, d02, d1, d2, true);
+                            ++headShots;
+                        }
                         this.field_82224_i[i - 1] = 0;
+                    }
+                    if ((i12 = this.getWatchedTargetId(i)) > 0) {
+                        Entity entity3 = this.worldObj.getEntityByID(i12);
+                        if (entity3 != null && entity3.isEntityAlive()) {
+                            this.launchWitherSkullToEntity(i + 1, (EntityLivingBase)entity3);
+                            ++headShots;
+                            this.field_82223_h[i - 1] = this.ticksExisted;
+                            this.field_82224_i[i - 1] = 0;
+                            continue;
+                        }
+                        this.func_82211_c(i, 0);
+                        continue;
+                    }
+                    if (this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive()) {
+                        this.func_82211_c(i, this.getAttackTarget().getEntityId());
                         continue;
                     }
                     this.func_82211_c(i, 0);
-                    continue;
                 }
-                if (this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive()) {
-                    this.func_82211_c(i, this.getAttackTarget().getEntityId());
-                    continue;
-                }
-                this.func_82211_c(i, 0);
+            } finally {
+                TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.secondaryHeads", perfHeadNs);
+                TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.headShots", headShots);
+                TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.randomBursts", randomBursts);
             }
             if (this.getAttackTarget() != null) {
                 this.func_82211_c(0, this.getAttackTarget().getEntityId());

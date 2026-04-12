@@ -917,6 +917,14 @@ IBossDisplayData {
 
     public void destroyBlocksInAABB(AxisAlignedBB p_70972_1_) {
         long perfNs = TitansPerf.begin();
+        int attempted = 0;
+        int destroyed = 0;
+        int budgetBefore = this.titanDestroyBudgetRemaining;
+        int budgetAfter = this.titanDestroyBudgetRemaining;
+        int fallingBudgetBefore = this.titanFallingBudgetRemaining;
+        int fallingBudgetAfter = this.titanFallingBudgetRemaining;
+        int nearbyFalling = 0;
+        int[] fallingSpawned = new int[]{0};
         try {
         if (p_70972_1_ == null) {
             return;
@@ -929,36 +937,85 @@ IBossDisplayData {
         int j1 = MathHelper.floor_double((double)p_70972_1_.maxZ);
         TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.shellVolume", TitanOptimizationHelper.countShellVolume(i, j, k, l, i1, j1));
         this.beginOptimizedDestroyWindow();
+        budgetBefore = this.titanDestroyBudgetRemaining;
+        fallingBudgetBefore = this.titanFallingBudgetRemaining;
         if (this.titanDestroyBudgetRemaining <= 0) {
             return;
         }
-        int[] fallingSpawned = new int[]{0};
         for (int y = j; y <= i1 && this.hasOptimizedDestroyBudget(); ++y) {
             for (int x = i; x <= l && this.hasOptimizedDestroyBudget(); ++x) {
-                if (this.tryDestroyTitanBlock(x, y, k, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) this.consumeOptimizedDestroyBudget();
-                if (j1 != k && this.hasOptimizedDestroyBudget() && this.tryDestroyTitanBlock(x, y, j1, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) this.consumeOptimizedDestroyBudget();
+                ++attempted;
+                if (this.tryDestroyTitanBlock(x, y, k, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) {
+                    ++destroyed;
+                    this.consumeOptimizedDestroyBudget();
+                }
+                if (j1 != k && this.hasOptimizedDestroyBudget()) {
+                    ++attempted;
+                    if (this.tryDestroyTitanBlock(x, y, j1, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) {
+                        ++destroyed;
+                        this.consumeOptimizedDestroyBudget();
+                    }
+                }
             }
         }
         for (int y = j; y <= i1 && this.hasOptimizedDestroyBudget(); ++y) {
             for (int z = k + 1; z < j1 && this.hasOptimizedDestroyBudget(); ++z) {
-                if (this.tryDestroyTitanBlock(i, y, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) this.consumeOptimizedDestroyBudget();
-                if (l != i && this.hasOptimizedDestroyBudget() && this.tryDestroyTitanBlock(l, y, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) this.consumeOptimizedDestroyBudget();
+                ++attempted;
+                if (this.tryDestroyTitanBlock(i, y, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) {
+                    ++destroyed;
+                    this.consumeOptimizedDestroyBudget();
+                }
+                if (l != i && this.hasOptimizedDestroyBudget()) {
+                    ++attempted;
+                    if (this.tryDestroyTitanBlock(l, y, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) {
+                        ++destroyed;
+                        this.consumeOptimizedDestroyBudget();
+                    }
+                }
             }
         }
         for (int x = i + 1; x < l && this.hasOptimizedDestroyBudget(); ++x) {
             for (int z = k + 1; z < j1 && this.hasOptimizedDestroyBudget(); ++z) {
-                if (this.tryDestroyTitanBlock(x, j, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) this.consumeOptimizedDestroyBudget();
-                if (i1 != j && this.hasOptimizedDestroyBudget() && this.tryDestroyTitanBlock(x, i1, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) this.consumeOptimizedDestroyBudget();
+                ++attempted;
+                if (this.tryDestroyTitanBlock(x, j, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) {
+                    ++destroyed;
+                    this.consumeOptimizedDestroyBudget();
+                }
+                if (i1 != j && this.hasOptimizedDestroyBudget()) {
+                    ++attempted;
+                    if (this.tryDestroyTitanBlock(x, i1, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) {
+                        ++destroyed;
+                        this.consumeOptimizedDestroyBudget();
+                    }
+                }
             }
         }
         }
         finally {
+            budgetAfter = this.titanDestroyBudgetRemaining;
+            fallingBudgetAfter = this.titanFallingBudgetRemaining;
+            nearbyFalling = this.titanNearbyFallingSnapshotCount;
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.attempted", attempted);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.destroyed", destroyed);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.fallingSpawned", fallingSpawned[0]);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.destroyBudgetBefore", budgetBefore);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.destroyBudgetAfter", budgetAfter);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.fallingBudgetBefore", fallingBudgetBefore);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.fallingBudgetAfter", fallingBudgetAfter);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.nearbyFallingSnapshot", nearbyFalling);
             TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#destroyBlocksInAABB", perfNs);
         }
 }
 
     public void destroyBlocksInAABBTopless(AxisAlignedBB p_70972_1_) {
         long perfNs = TitansPerf.begin();
+        int attempted = 0;
+        int destroyed = 0;
+        int budgetBefore = this.titanDestroyBudgetRemaining;
+        int budgetAfter = this.titanDestroyBudgetRemaining;
+        int fallingBudgetBefore = this.titanFallingBudgetRemaining;
+        int fallingBudgetAfter = this.titanFallingBudgetRemaining;
+        int[] fallingSpawned = new int[]{0};
         try {
         if (p_70972_1_ == null) {
             return;
@@ -971,6 +1028,8 @@ IBossDisplayData {
         int j1 = MathHelper.floor_double((double)p_70972_1_.maxZ);
         TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.columns", (l - i + 1) * (j1 - k + 1));
         this.beginOptimizedDestroyWindow();
+        budgetBefore = this.titanDestroyBudgetRemaining;
+        fallingBudgetBefore = this.titanFallingBudgetRemaining;
         if (this.titanDestroyBudgetRemaining <= 0) {
             return;
         }
@@ -980,7 +1039,6 @@ IBossDisplayData {
         if (this.titanFallingBudgetRemaining > Math.max(2, this.getOptimizedFallingBlockBudget() / 2)) {
             this.titanFallingBudgetRemaining = Math.max(2, this.getOptimizedFallingBlockBudget() / 2);
         }
-        int[] fallingSpawned = new int[]{0};
         for (int x = i; x <= l && this.hasOptimizedDestroyBudget(); ++x) {
             for (int z = k; z <= j1 && this.hasOptimizedDestroyBudget(); ++z) {
                 for (int y = i1; y >= j && this.hasOptimizedDestroyBudget(); --y) {
@@ -989,13 +1047,26 @@ IBossDisplayData {
                     if (block.isAir((IBlockAccess)this.worldObj, x, y, z) || !block.isOpaqueCube() || block1.isOpaqueCube()) {
                         continue;
                     }
-                    if (this.tryDestroyTitanBlock(x, y, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) this.consumeOptimizedDestroyBudget();
+                    ++attempted;
+                    if (this.tryDestroyTitanBlock(x, y, z, i, j, k, l, i1, j1, fallingSpawned, this.titanFallingBudgetRemaining)) {
+                        ++destroyed;
+                        this.consumeOptimizedDestroyBudget();
+                    }
                     break;
                 }
             }
         }
         }
         finally {
+            budgetAfter = this.titanDestroyBudgetRemaining;
+            fallingBudgetAfter = this.titanFallingBudgetRemaining;
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.attempted", attempted);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.destroyed", destroyed);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.fallingSpawned", fallingSpawned[0]);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.destroyBudgetBefore", budgetBefore);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.destroyBudgetAfter", budgetAfter);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.fallingBudgetBefore", fallingBudgetBefore);
+            TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.fallingBudgetAfter", fallingBudgetAfter);
             TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless", perfNs);
         }
 }
