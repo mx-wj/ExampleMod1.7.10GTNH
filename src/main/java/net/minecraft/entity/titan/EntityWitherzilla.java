@@ -57,6 +57,7 @@
 package net.minecraft.entity.titan;
 import net.minecraft.theTitans.perf.PerfSection;
 import net.minecraft.theTitans.perf.TitansPerf;
+import net.minecraft.theTitans.util.TitanOptimizationHelper;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
@@ -332,7 +333,7 @@ implements IRangedAttackMob {
         Entity entity;
         List list;
         ArrayList listp;
-        if (!(this.worldObj.provider instanceof WorldProviderVoid)) {
+        if (!(this.worldObj.provider instanceof WorldProviderVoid) && (this.ticksExisted & 31) == 0) {
             WorldServer worldserver = MinecraftServer.getServer().worldServers[0];
             WorldInfo worldinfo = worldserver.getWorldInfo();
             if (this.getAttackTarget() != null && this.getAttackTarget() instanceof EntityEnderColossus) {
@@ -348,8 +349,8 @@ implements IRangedAttackMob {
             }
         }
         if (!(this.worldObj.provider instanceof WorldProviderVoid)) {
-            if (this.rand.nextInt(2) == 0) {
-                for (int l = 0; l < 20; ++l) {
+            if ((this.ticksExisted & 7) == 0 && this.rand.nextInt(3) == 0) {
+                for (int l = 0; l < 4; ++l) {
                     int i2 = MathHelper.floor_double((double)this.posX);
                     int j2 = MathHelper.floor_double((double)this.posY);
                     int k = MathHelper.floor_double((double)this.posZ);
@@ -402,7 +403,7 @@ implements IRangedAttackMob {
         this.setSize(this.omegacounter > 0 ? 128.0f : 64.0f, this.omegacounter > 0 ? 448.0f : 224.0f);
         this.worldObj.setWorldTime(18000L);
         listp = Lists.newArrayList((Iterable)this.worldObj.playerEntities);
-        if (listp != null && !listp.isEmpty() && this.rand.nextInt(4) == 0) {
+        if (listp != null && !listp.isEmpty() && (this.ticksExisted % 40 == 0)) {
             for (int i1 = 0; i1 < listp.size(); ++i1) {
                 Entity entity3 = (Entity)listp.get(i1);
                 if (entity3 == null || !(entity3 instanceof EntityPlayer) || this.rand.nextInt(100) != 0) continue;
@@ -415,7 +416,7 @@ implements IRangedAttackMob {
                 ((EntityPlayer)entity3).addChatMessage((IChatComponent)new ChatComponentText(StatCollector.translateToLocal((String)("dialog.witherzilla.plead." + this.rand.nextInt(6)))));
             }
         }
-        if ((list = this.worldObj.loadedEntityList) != null && !list.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid)) {
+        if ((this.ticksExisted & 2) == 0 && (list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 64.0, 96.0))) != null && !list.isEmpty() && !(this.worldObj.provider instanceof WorldProviderVoid)) {
             for (int i1 = 0; i1 < list.size(); ++i1) {
                 Entity entity4 = (Entity)list.get(i1);
                 if (entity4 != null && entity4.isEntityAlive() && this.getAttackTarget() != null && entity4 instanceof EntityWitherzillaMinion) {
@@ -662,7 +663,7 @@ implements IRangedAttackMob {
                 }
             }
             long perfLoadedNs = TitansPerf.begin();
-            if ((list = this.worldObj.loadedEntityList) != null && !list.isEmpty()) {
+            if ((this.ticksExisted & 7) == 0 && (list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 64.0, 96.0))) != null && !list.isEmpty()) {
                 TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.loadedEntities", list.size());
                 for (i1 = 0; i1 < list.size(); ++i1) {
                     entity = (Entity)list.get(i1);
@@ -672,8 +673,9 @@ implements IRangedAttackMob {
                         ((EntityPlayer)entity).destroyCurrentEquippedItem();
                         this.doLightningAttackTo(entity);
                     }
-                    if (!(entity instanceof EntityAgeable) && !(entity instanceof EntityAmbientCreature) && !(entity instanceof EntityWaterMob)) continue;
-                    list.remove(entity);
+                    if ((entity instanceof EntityAgeable || entity instanceof EntityAmbientCreature || entity instanceof EntityWaterMob) && this.getDistanceSqToEntity(entity) < 4096.0) {
+                        entity.setDead();
+                    }
                 }
             }
             TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#updateAITasks.loadedEntityLoop", perfLoadedNs);
@@ -719,30 +721,13 @@ implements IRangedAttackMob {
             }
             if (this.blockBreakCounter > 0) {
                 --this.blockBreakCounter;
-                if (this.blockBreakCounter == 0 && this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing")) {
-                    i = MathHelper.floor_double((double)this.posY);
-                    int i13 = MathHelper.floor_double((double)this.posX);
-                    int j1 = MathHelper.floor_double((double)this.posZ);
-                    boolean flag = false;
-                    for (int l1 = -32; l1 <= 32; ++l1) {
-                        for (int i2 = -32; i2 <= 32; ++i2) {
-                            for (int j = -32; j <= 246; ++j) {
-                                int j2 = i13 + l1;
-                                int k = i + j;
-                                int l = j1 + i2;
-                                Block block = this.worldObj.getBlock(j2, k, l);
-                                if (block.isAir((IBlockAccess)this.worldObj, j2, k, l) || block.getBlockHardness(this.worldObj, j2, k, l) == -1.0f) continue;
-                                flag = this.worldObj.func_147480_a(j2, k, l, false) || flag;
-                            }
-                        }
-                    }
-                    if (flag) {
-                        long perfBreakNs = TitansPerf.begin();
-                        this.destroyBlocksInAABB(this.boundingBox);
-                        TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#updateAITasks.destroyBlocks", perfBreakNs);
-                        this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1012, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
-                    }
-                }
+            }
+            if (this.blockBreakCounter <= 0 && this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing") && TitanOptimizationHelper.shouldRunHeavyAI(this, 2, 4, 96.0)) {
+                this.blockBreakCounter = 8;
+                long perfBreakNs = TitansPerf.begin();
+                this.destroyBlocksInAABB(this.boundingBox.expand(4.0, 2.0, 4.0));
+                TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#updateAITasks.destroyBlocks", perfBreakNs);
+                this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1012, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
             }
         }
     

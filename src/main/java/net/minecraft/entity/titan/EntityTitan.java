@@ -95,6 +95,7 @@
 package net.minecraft.entity.titan;
 import net.minecraft.theTitans.perf.PerfSection;
 import net.minecraft.theTitans.perf.TitansPerf;
+import net.minecraft.theTitans.util.TitanOptimizationHelper;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.Loader;
@@ -733,6 +734,86 @@ IBossDisplayData {
         }
     }
 
+
+    protected int getOptimizedDestroyBudget() {
+        if (this.getTitanStatus() == EnumTitanStatus.GOD) {
+            return 192;
+        }
+        if (this.getTitanStatus() == EnumTitanStatus.GREATER) {
+            return 128;
+        }
+        return 96;
+    }
+
+    protected int getOptimizedFallingBlockBudget() {
+        if (this.getTitanStatus() == EnumTitanStatus.GOD) {
+            return 32;
+        }
+        if (this.getTitanStatus() == EnumTitanStatus.GREATER) {
+            return 16;
+        }
+        return 10;
+    }
+
+    protected int getOptimizedNearbyFallingBlockCap() {
+        if (this.getTitanStatus() == EnumTitanStatus.GOD) {
+            return 40;
+        }
+        if (this.getTitanStatus() == EnumTitanStatus.GREATER) {
+            return 28;
+        }
+        return 20;
+    }
+
+    protected boolean shouldSpawnTitanFallingBlockVisual(int x, int y, int z, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int spawned, int maxSpawn) {
+        if (spawned >= maxSpawn) {
+            return false;
+        }
+        if (!TitanOptimizationHelper.shouldConsiderForTitanFallingBlock(this.worldObj, x, y, z, minX, minY, minZ, maxX, maxY, maxZ)) {
+            return false;
+        }
+        return this.rand.nextInt(4) == 0;
+    }
+
+    protected void spawnOptimizedFallingBlock(int x, int y, int z, Block block, int meta) {
+        EntityFallingBlockTitan entityfallingblock = new EntityFallingBlockTitan(this.worldObj, (double)x + 0.5, (double)y + 0.5, (double)z + 0.5, block, meta);
+        entityfallingblock.setPosition((double)x + 0.5, (double)y + 0.5, (double)z + 0.5);
+        double centerX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0;
+        double centerZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0;
+        double d2 = entityfallingblock.posX - centerX;
+        double d3 = entityfallingblock.posZ - centerZ;
+        double d4 = Math.max(1.0, d2 * d2 + d3 * d3);
+        entityfallingblock.setFire(10);
+        entityfallingblock.addVelocity(d2 / d4 * 4.0, 0.8 + this.rand.nextDouble() * 0.6, d3 / d4 * 4.0);
+        this.worldObj.spawnEntityInWorld((Entity)entityfallingblock);
+    }
+
+    protected boolean tryDestroyTitanBlock(int x, int y, int z, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int[] fallingSpawned, int fallingBudget) {
+        Block block = this.worldObj.getBlock(x, y, z);
+        if (this.ticksExisted <= 5 || !this.worldObj.checkChunksExist(x, y, z, x, y, z) || block.isAir((IBlockAccess)this.worldObj, x, y, z) || this.worldObj.isRemote || block.getBlockHardness(this.worldObj, x, y, z) == -1.0f) {
+            return false;
+        }
+        if (block.getMaterial().isLiquid() || block == Blocks.fire || block == Blocks.web) {
+            return this.worldObj.setBlockToAir(x, y, z);
+        }
+        int meta = this.worldObj.getBlockMetadata(x, y, z);
+        if (this.shouldSpawnTitanFallingBlockVisual(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, fallingSpawned[0], fallingBudget)) {
+            int nearbyFalling = TitanOptimizationHelper.countNearbyFallingBlocks(this, this.boundingBox.expand(32.0, 16.0, 32.0));
+            if (nearbyFalling < this.getOptimizedNearbyFallingBlockCap()) {
+                this.spawnOptimizedFallingBlock(x, y, z, block, meta);
+                ++fallingSpawned[0];
+                this.worldObj.setBlockToAir(x, y, z);
+                return true;
+            }
+        }
+        if (TitanOptimizationHelper.hasNearbyPlayer(this, 24.0) && TitanOptimizationHelper.canDropAsItem(block) && this.rand.nextInt(5) == 0) {
+            this.worldObj.func_147480_a(x, y, z, true);
+            return true;
+        }
+        this.worldObj.setBlockToAir(x, y, z);
+        return true;
+    }
+
     public boolean destroyBlocksInAABBGriefingBypass(AxisAlignedBB p_70972_1_) {
         long perfNs = TitansPerf.begin();
         try {
@@ -765,6 +846,9 @@ IBossDisplayData {
     public void destroyBlocksInAABB(AxisAlignedBB p_70972_1_) {
         long perfNs = TitansPerf.begin();
         try {
+        if (p_70972_1_ == null) {
+            return;
+        }
         int i = MathHelper.floor_double((double)p_70972_1_.minX);
         int j = MathHelper.floor_double((double)p_70972_1_.minY);
         int k = MathHelper.floor_double((double)p_70972_1_.minZ);
@@ -772,39 +856,27 @@ IBossDisplayData {
         int i1 = MathHelper.floor_double((double)p_70972_1_.maxY);
         int j1 = MathHelper.floor_double((double)p_70972_1_.maxZ);
         TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABB.volume", (l - i + 1) * (i1 - j + 1) * (j1 - k + 1));
-        for (int k1 = i; k1 <= l; ++k1) {
-            for (int l1 = j; l1 <= i1; ++l1) {
-                for (int i2 = k; i2 <= j1; ++i2) {
-                    Block block = this.worldObj.getBlock(k1, l1, i2);
-                    if (this.ticksExisted <= 5 || p_70972_1_ == null || !this.worldObj.checkChunksExist(k1, l1, i2, k1, l1, i2) || block.isAir((IBlockAccess)this.worldObj, k1, l1, i2) || this.worldObj.isRemote || block.getBlockHardness(this.worldObj, k1, l1, i2) == -1.0f) continue;
-                    if (block.getMaterial().isLiquid() || block == Blocks.fire || block == Blocks.web) {
-                        this.worldObj.setBlockToAir(k1, l1, i2);
-                        continue;
-                    }
-                    if (this.rand.nextInt(3) == 0) {
-                        EntityFallingBlockTitan entityfallingblock = new EntityFallingBlockTitan(this.worldObj, (double)k1 + 0.5, (double)l1 + 0.5, (double)i2 + 0.5, block, this.worldObj.getBlockMetadata(k1, l1, i2));
-                        entityfallingblock.setPosition((double)k1 + 0.5, (double)l1 + 0.5, (double)i2 + 0.5);
-                        double d0 = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0;
-                        double d1 = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0;
-                        double d2 = entityfallingblock.posX - d0;
-                        double d3 = entityfallingblock.posZ - d1;
-                        double d4 = d2 * d2 + d3 * d3;
-                        entityfallingblock.setFire(10);
-                        entityfallingblock.addVelocity(d2 / d4 * 10.0, 2.0 + this.rand.nextGaussian(), d3 / d4 * 10.0);
-                        this.worldObj.spawnEntityInWorld((Entity)entityfallingblock);
-                        this.worldObj.setBlockToAir(k1, l1, i2);
-                        continue;
-                    }
-                    if (this.worldObj.getClosestPlayerToEntity((Entity)this, 16.0) != null) {
-                        this.worldObj.func_147480_a(k1, l1, i2, true);
-                        continue;
-                    }
-                    this.worldObj.setBlockToAir(k1, l1, i2);
-                    block.dropBlockAsItem(this.worldObj, k1, l1, i2, this.worldObj.getBlockMetadata(k1, l1, i2), 0);
-                }
+        int budget = this.getOptimizedDestroyBudget();
+        int fallingBudget = this.getOptimizedFallingBlockBudget();
+        int[] fallingSpawned = new int[]{0};
+        for (int y = j; y <= i1 && budget > 0; ++y) {
+            for (int x = i; x <= l && budget > 0; ++x) {
+                if (this.tryDestroyTitanBlock(x, y, k, i, j, k, l, i1, j1, fallingSpawned, fallingBudget)) --budget;
+                if (j1 != k && budget > 0 && this.tryDestroyTitanBlock(x, y, j1, i, j, k, l, i1, j1, fallingSpawned, fallingBudget)) --budget;
             }
         }
-    
+        for (int y = j; y <= i1 && budget > 0; ++y) {
+            for (int z = k + 1; z < j1 && budget > 0; ++z) {
+                if (this.tryDestroyTitanBlock(i, y, z, i, j, k, l, i1, j1, fallingSpawned, fallingBudget)) --budget;
+                if (l != i && budget > 0 && this.tryDestroyTitanBlock(l, y, z, i, j, k, l, i1, j1, fallingSpawned, fallingBudget)) --budget;
+            }
+        }
+        for (int x = i + 1; x < l && budget > 0; ++x) {
+            for (int z = k + 1; z < j1 && budget > 0; ++z) {
+                if (this.tryDestroyTitanBlock(x, j, z, i, j, k, l, i1, j1, fallingSpawned, fallingBudget)) --budget;
+                if (i1 != j && budget > 0 && this.tryDestroyTitanBlock(x, i1, z, i, j, k, l, i1, j1, fallingSpawned, fallingBudget)) --budget;
+            }
+        }
         }
         finally {
             TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#destroyBlocksInAABB", perfNs);
@@ -814,6 +886,9 @@ IBossDisplayData {
     public void destroyBlocksInAABBTopless(AxisAlignedBB p_70972_1_) {
         long perfNs = TitansPerf.begin();
         try {
+        if (p_70972_1_ == null) {
+            return;
+        }
         int i = MathHelper.floor_double((double)p_70972_1_.minX);
         int j = MathHelper.floor_double((double)p_70972_1_.minY);
         int k = MathHelper.floor_double((double)p_70972_1_.minZ);
@@ -821,40 +896,22 @@ IBossDisplayData {
         int i1 = MathHelper.floor_double((double)p_70972_1_.maxY);
         int j1 = MathHelper.floor_double((double)p_70972_1_.maxZ);
         TitansPerf.count(this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless.volume", (l - i + 1) * (i1 - j + 1) * (j1 - k + 1));
-        for (int k1 = i; k1 <= l; ++k1) {
-            for (int l1 = j; l1 <= i1; ++l1) {
-                for (int i2 = k; i2 <= j1; ++i2) {
-                    Block block = this.worldObj.getBlock(k1, l1, i2);
-                    Block block1 = this.worldObj.getBlock(k1, l1 + 1, i2);
-                    if (this.ticksExisted <= 5 || p_70972_1_ == null || !this.worldObj.checkChunksExist(k1, l1, i2, k1, l1, i2) || !block.isOpaqueCube() || block1.isOpaqueCube() || this.worldObj.isRemote || block.getBlockHardness(this.worldObj, k1, l1, i2) == -1.0f) continue;
-                    if (block.getMaterial().isLiquid() || block == Blocks.fire || block == Blocks.web) {
-                        this.worldObj.setBlockToAir(k1, l1, i2);
+        int budget = Math.max(32, this.getOptimizedDestroyBudget() / 2);
+        int fallingBudget = Math.max(4, this.getOptimizedFallingBlockBudget() / 2);
+        int[] fallingSpawned = new int[]{0};
+        for (int x = i; x <= l && budget > 0; ++x) {
+            for (int z = k; z <= j1 && budget > 0; ++z) {
+                for (int y = i1; y >= j && budget > 0; --y) {
+                    Block block = this.worldObj.getBlock(x, y, z);
+                    Block block1 = this.worldObj.getBlock(x, y + 1, z);
+                    if (block.isAir((IBlockAccess)this.worldObj, x, y, z) || !block.isOpaqueCube() || block1.isOpaqueCube()) {
                         continue;
                     }
-                    if (this.rand.nextInt(3) == 0) {
-                        EntityFallingBlockTitan entityfallingblock = new EntityFallingBlockTitan(this.worldObj, (double)k1 + 0.5, (double)l1 + 0.5, (double)i2 + 0.5, block, this.worldObj.getBlockMetadata(k1, l1, i2));
-                        entityfallingblock.setPosition((double)k1 + 0.5, (double)l1 + 0.5, (double)i2 + 0.5);
-                        double d0 = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0;
-                        double d1 = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0;
-                        double d2 = entityfallingblock.posX - d0;
-                        double d3 = entityfallingblock.posZ - d1;
-                        double d4 = d2 * d2 + d3 * d3;
-                        entityfallingblock.setFire(10);
-                        entityfallingblock.addVelocity(d2 / d4 * 10.0, 2.0 + this.rand.nextGaussian(), d3 / d4 * 10.0);
-                        this.worldObj.spawnEntityInWorld((Entity)entityfallingblock);
-                        this.worldObj.setBlockToAir(k1, l1, i2);
-                        continue;
-                    }
-                    if (this.worldObj.getClosestPlayerToEntity((Entity)this, 16.0) != null) {
-                        this.worldObj.func_147480_a(k1, l1, i2, true);
-                        continue;
-                    }
-                    this.worldObj.setBlockToAir(k1, l1, i2);
-                    block.dropBlockAsItem(this.worldObj, k1, l1, i2, this.worldObj.getBlockMetadata(k1, l1, i2), 0);
+                    if (this.tryDestroyTitanBlock(x, y, z, i, j, k, l, i1, j1, fallingSpawned, fallingBudget)) --budget;
+                    break;
                 }
             }
         }
-    
         }
         finally {
             TitansPerf.endWarn(PerfSection.BLOCK_BREAK, this.getClass().getSimpleName() + "#destroyBlocksInAABBTopless", perfNs);
@@ -1213,12 +1270,14 @@ IBossDisplayData {
     protected void updateAITasks() {
         long perfNs = TitansPerf.begin();
         try {
-        List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
-        TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.entityScan", list11 == null ? 0 : list11.size());
-        if (list11 != null && !list11.isEmpty()) {
-            for (int i1 = 0; i1 < list11.size(); ++i1) {
-                Entity entity = (Entity)list11.get(i1);
-                this.applyEntityCollision(entity);
+        if (TitanOptimizationHelper.shouldRunHeavyAI(this, 1, 2, 48.0)) {
+            List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox);
+            TitansPerf.count(this.getClass().getSimpleName() + "#updateAITasks.entityScan", list11 == null ? 0 : list11.size());
+            if (list11 != null && !list11.isEmpty()) {
+                for (int i1 = 0; i1 < list11.size(); ++i1) {
+                    Entity entity = (Entity)list11.get(i1);
+                    this.applyEntityCollision(entity);
+                }
             }
         }
         if (this.rand.nextInt(1000) == 0 && this.getHealth() < this.getMaxHealth() / 20.0f && this.deathTicks <= 0 || this.getHealth() < this.getMaxHealth() / 2.0f && this.deathTicks <= 0 && this.getAttackTarget() != null && this.getAttackTarget() instanceof EntityTitan && !this.isRejuvinating && ((EntityTitan)this.getAttackTarget()).isRejuvinating && !(this instanceof EntitySlimeTitan) && !(this instanceof EntitySnowGolemTitan) && !(this instanceof EntityIronGolemTitan) && !(this instanceof EntityGargoyleTitan)) {
@@ -1253,7 +1312,9 @@ IBossDisplayData {
                 this.heal(this.getMaxHealth() / 1000.0f);
             }
         } else {
-            super.updateAITasks();
+            if (this.getAttackTarget() != null || TitanOptimizationHelper.shouldRunHeavyAI(this, 1, 2, 64.0)) {
+                super.updateAITasks();
+            }
             if (!(this instanceof EntitySlimeTitan)) {
                 float at = this.getTitanStatus() == EnumTitanStatus.AVERAGE ? 3.0f : (this.getTitanStatus() == EnumTitanStatus.GREATER ? 6.0f : (this.getTitanStatus() == EnumTitanStatus.GOD ? 20.0f : 1.0f));
                 if ((this instanceof EntityZombieTitan || this instanceof EntitySkeletonTitan) && this.worldObj.isDaytime()) {

@@ -93,61 +93,79 @@ extends EntityFallingBlock {
         this.ignoreFrustumCheck = false;
         if (this.field_145811_e.getMaterial() == Material.air) {
             this.field_145811_e = Blocks.sand;
-        } else {
-            this.prevPosX = this.posX;
-            this.prevPosY = this.posY;
-            this.prevPosZ = this.posZ;
-            ++this.field_145812_b;
-            this.motionY -= (double)0.04f;
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= (double)0.98f;
-            this.motionY *= (double)0.98f;
-            this.motionZ *= (double)0.98f;
-            if (!this.worldObj.isRemote && this.field_145812_b > 40) {
-                int i = MathHelper.floor_double((double)this.posX);
-                int j = MathHelper.floor_double((double)this.posY);
-                int k = MathHelper.floor_double((double)this.posZ);
-                if (this.onGround) {
-                    this.motionX *= (double)0.7f;
-                    this.motionZ *= (double)0.7f;
-                    this.motionY *= -0.5;
-                    if (this.worldObj.getBlock(i, j, k) != Blocks.piston_extension) {
-                        this.setDead();
-                        if (!this.field_145808_f && this.worldObj.canPlaceEntityOnSide(this.field_145811_e, i, j, k, true, 1, (Entity)null, (ItemStack)null) && !BlockFalling.func_149831_e((World)this.worldObj, (int)i, (int)(j - 1), (int)k) && this.worldObj.setBlock(i, j, k, this.field_145811_e, this.field_145814_a, 3)) {
-                            TileEntity tileentity;
+            return;
+        }
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+        ++this.field_145812_b;
+        this.motionY -= (double)0.04f;
+        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.motionX *= (double)0.98f;
+        this.motionY *= (double)0.98f;
+        this.motionZ *= (double)0.98f;
+        if (!this.worldObj.isRemote) {
+            if (this.field_145812_b > 120) {
+                this.setDead();
+                return;
+            }
+            if (this.field_145812_b > 80 && this.worldObj.getClosestPlayerToEntity((Entity)this, 64.0) == null) {
+                this.setDead();
+                return;
+            }
+        }
+        if (!this.worldObj.isRemote && this.field_145812_b > 20) {
+            int i = MathHelper.floor_double((double)this.posX);
+            int j = MathHelper.floor_double((double)this.posY);
+            int k = MathHelper.floor_double((double)this.posZ);
+            if (this.onGround) {
+                this.motionX *= (double)0.7f;
+                this.motionZ *= (double)0.7f;
+                this.motionY *= -0.5;
+                if (this.field_145812_b > 40 && Math.abs(this.motionX) < 0.02 && Math.abs(this.motionY) < 0.02 && Math.abs(this.motionZ) < 0.02) {
+                    this.setDead();
+                    return;
+                }
+                if (this.worldObj.getBlock(i, j, k) != Blocks.piston_extension) {
+                    this.setDead();
+                    if (!this.field_145808_f && this.worldObj.canPlaceEntityOnSide(this.field_145811_e, i, j, k, true, 1, (Entity)null, (ItemStack)null) && !BlockFalling.func_149831_e((World)this.worldObj, (int)i, (int)(j - 1), (int)k) && this.worldObj.setBlock(i, j, k, this.field_145811_e, this.field_145814_a, 3)) {
+                        TileEntity tileentity;
+                        if (this.worldObj.isRemote) {
                             Minecraft.getMinecraft().renderGlobal.spawnParticle("largeexplode", (double)i, (double)j, (double)k, 0.0, 0.0, 0.0);
                             Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(i, j, k, this.field_145811_e, Block.getIdFromBlock((Block)this.field_145811_e) >> 12 & 0xFF);
-                            if (this.worldObj.getClosestPlayerToEntity((Entity)this, 16.0) != null) {
-                                this.playSound("thetitans:titanPress", 1.0f, 1.0f + this.rand.nextFloat() * 0.25f);
+                        }
+                        if (this.worldObj.getClosestPlayerToEntity((Entity)this, 16.0) != null) {
+                            this.playSound("thetitans:titanPress", 1.0f, 1.0f + this.rand.nextFloat() * 0.25f);
+                        }
+                        if (this.field_145811_e instanceof BlockFalling) {
+                            ((BlockFalling)this.field_145811_e).func_149828_a(this.worldObj, i, j, k, this.field_145814_a);
+                        }
+                        if (this.field_145810_d != null && this.field_145811_e instanceof ITileEntityProvider && (tileentity = this.worldObj.getTileEntity(i, j, k)) != null) {
+                            NBTTagCompound nbttagcompound = new NBTTagCompound();
+                            tileentity.writeToNBT(nbttagcompound);
+                            for (String s : this.field_145810_d.func_150296_c()) {
+                                NBTBase nbtbase = this.field_145810_d.getTag(s);
+                                if (s.equals("x") || s.equals("y") || s.equals("z")) continue;
+                                nbttagcompound.setTag(s, nbtbase.copy());
                             }
-                            if (this.field_145811_e instanceof BlockFalling) {
-                                ((BlockFalling)this.field_145811_e).func_149828_a(this.worldObj, i, j, k, this.field_145814_a);
-                            }
-                            if (this.field_145810_d != null && this.field_145811_e instanceof ITileEntityProvider && (tileentity = this.worldObj.getTileEntity(i, j, k)) != null) {
-                                NBTTagCompound nbttagcompound = new NBTTagCompound();
-                                tileentity.writeToNBT(nbttagcompound);
-                                for (String s : this.field_145810_d.func_150296_c()) {
-                                    NBTBase nbtbase = this.field_145810_d.getTag(s);
-                                    if (s.equals("x") || s.equals("y") || s.equals("z")) continue;
-                                    nbttagcompound.setTag(s, nbtbase.copy());
-                                }
-                                tileentity.readFromNBT(nbttagcompound);
-                                tileentity.markDirty();
-                            }
-                        } else if (this.field_145813_c && this.field_145808_f) {
-                            this.entityDropItem(new ItemStack(this.field_145811_e, 1, this.field_145811_e.damageDropped(this.field_145814_a)), 0.0f);
+                            tileentity.readFromNBT(nbttagcompound);
+                            tileentity.markDirty();
                         }
                     }
-                } else if (!this.worldObj.isRemote && (j < 1 || j > 256) || this.field_145812_b > 1000) {
+                }
+            } else if ((!this.worldObj.isRemote && (j < 1 || j > 256)) || this.field_145812_b > 240) {
+                if (this.field_145813_c && this.worldObj.getClosestPlayerToEntity((Entity)this, 24.0) != null) {
                     this.entityDropItem(new ItemStack(this.field_145811_e, 1, this.field_145811_e.damageDropped(this.field_145814_a)), 0.0f);
+                }
+                if (this.worldObj.isRemote) {
                     Minecraft.getMinecraft().renderGlobal.spawnParticle("largeexplode", (double)i, (double)j, (double)k, 0.0, 0.0, 0.0);
                     Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(i, j, k, this.field_145811_e, Block.getIdFromBlock((Block)this.field_145811_e) >> 12 & 0xFF);
-                    this.fall(this.field_145812_b);
-                    if (this.worldObj.getClosestPlayerToEntity((Entity)this, 16.0) != null) {
-                        this.playSound("thetitans:titanPress", 1.0f, 1.25f + this.rand.nextFloat() * 0.25f);
-                    }
-                    this.setDead();
                 }
+                this.fall(this.field_145812_b);
+                if (this.worldObj.getClosestPlayerToEntity((Entity)this, 16.0) != null) {
+                    this.playSound("thetitans:titanPress", 1.0f, 1.25f + this.rand.nextFloat() * 0.25f);
+                }
+                this.setDead();
             }
         }
     }

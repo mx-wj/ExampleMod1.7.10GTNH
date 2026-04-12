@@ -46,6 +46,7 @@
 package net.minecraft.entity.titanminion;
 import net.minecraft.theTitans.perf.PerfSection;
 import net.minecraft.theTitans.perf.TitansPerf;
+import net.minecraft.theTitans.util.TitanOptimizationHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -592,6 +593,11 @@ ITemplar {
         return p_110161_1_;
     }
 
+    private boolean canSpawnMoreZombieMinionsNearby(int limit) {
+        List list = this.worldObj.getEntitiesWithinAABB(this.getClass(), this.boundingBox.expand(32.0, 16.0, 32.0));
+        return list == null || list.size() < limit;
+    }
+
     public void onLivingUpdate() {
         long perfNs = TitansPerf.begin();
         try {
@@ -625,13 +631,18 @@ ITemplar {
                         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(3.0);
                         this.experienceValue = 7;
                     }
+                    boolean runFullLivingTick = this.getAttackTarget() != null || this.master != null || TitanOptimizationHelper.shouldRunHeavyAI(this, 1, 2, 48.0);
                     if (this.isEntityAlive() || this.getMinionTypeInt() != 4) {
                         long perfSuperNs = TitansPerf.begin();
-                        super.onLivingUpdate();
+                        if (runFullLivingTick) {
+                            super.onLivingUpdate();
+                        } else if (((this.ticksExisted + this.getEntityId()) & 1) == 0) {
+                            super.onLivingUpdate();
+                        }
                         TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuperNs);
                     }
                     if (this.getMinionTypeInt() == 3) {
-                        if (this.rand.nextInt(120) == 0 && this.master == null && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
+                        if (this.rand.nextInt(120) == 0 && this.master == null && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && this.canSpawnMoreZombieMinionsNearby(18)) {
                             entitychicken = new EntityZombieMinion(this.worldObj);
                             entitychicken.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                             entitychicken.onSpawnWithEgg(null);
@@ -640,7 +651,7 @@ ITemplar {
                             entitychicken.setVillager(this.isVillager());
                             this.worldObj.spawnEntityInWorld((Entity)entitychicken);
                         }
-                        if (this.rand.nextInt(240) == 0 && this.master == null && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
+                        if (this.rand.nextInt(240) == 0 && this.master == null && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && this.canSpawnMoreZombieMinionsNearby(18)) {
                             entitychicken = new EntityZombieMinion(this.worldObj);
                             entitychicken.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                             entitychicken.onSpawnWithEgg(null);
@@ -672,7 +683,7 @@ ITemplar {
                         if (!this.onGround && this.motionY < 0.0) {
                             this.motionY *= 0.6;
                         }
-                        if (this.master == null && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL) {
+                        if (this.master == null && this.getHealth() > 0.0f && !this.worldObj.isRemote && this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && this.canSpawnMoreZombieMinionsNearby(18)) {
                             if (this.rand.nextInt(60) == 0) {
                                 entitychicken = new EntityZombieMinion(this.worldObj);
                                 entitychicken.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
@@ -811,15 +822,18 @@ ITemplar {
                 this.getMoveHelper().setMoveTo(this.master.posX, this.master.posY, this.master.posZ, 2.0);
                 break block53;
             }
-            long perfMasterNs = TitansPerf.begin();
-            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(100.0, 100.0, 100.0));
-            TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.masterScan", perfMasterNs);
-            TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.masterCandidates", list == null ? 0 : list.size());
-            if (list != null && !list.isEmpty()) {
-                for (int i1 = 0; i1 < list.size(); ++i1) {
-                    Entity entity = (Entity)list.get(i1);
-                    if (entity == null || !(entity instanceof EntityZombieTitan)) continue;
-                    this.master = (EntityZombieTitan)entity;
+            if ((this.ticksExisted & 7) == 0) {
+                long perfMasterNs = TitansPerf.begin();
+                List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(48.0, 32.0, 48.0));
+                TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.masterScan", perfMasterNs);
+                TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.masterCandidates", list == null ? 0 : list.size());
+                if (list != null && !list.isEmpty()) {
+                    for (int i1 = 0; i1 < list.size(); ++i1) {
+                        Entity entity = (Entity)list.get(i1);
+                        if (entity == null || !(entity instanceof EntityZombieTitan)) continue;
+                        this.master = (EntityZombieTitan)entity;
+                        break;
+                    }
                 }
             }
         }
@@ -846,8 +860,11 @@ ITemplar {
         if (this.isCollidedHorizontally && this.master != null) {
             this.motionY = 0.2;
         }
+        boolean runHeavyAI = this.getAttackTarget() != null || this.master != null || TitanOptimizationHelper.shouldRunHeavyAI(this, 2, 6, 48.0);
         long perfSuperAiNs = TitansPerf.begin();
-        super.updateAITasks();
+        if (runHeavyAI) {
+            super.updateAITasks();
+        }
         TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks.super", perfSuperAiNs);
     
         }
