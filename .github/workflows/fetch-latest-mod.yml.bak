@@ -12,7 +12,6 @@ on:
       - 'gradle.properties'
       - 'dependencies.gradle'
       - 'repositories.gradle'
-      - 'addon.gradle'
       - 'gradle/**'
       - 'gradlew'
       - '.java-version'
@@ -73,21 +72,17 @@ jobs:
 
           src_dir=""
 
-          search_roots=(
-            "build"
+          # 常见位置先试
+          for d in \
+            build/tmp/decompile/forge-1.7.10-10.13.4.1614-1.7.10-sources \
+            build/tmp/decompile \
+            build/rfg \
+            build/tmp \
+            build \
             "$HOME/.gradle"
-          )
-
-          for d in "${search_roots[@]}"; do
+          ; do
             if [ -d "$d" ]; then
-              hit="$(find "$d" -type d \
-                \( -iname '*decomp*sources*' \
-                -o -iname '*minecraft*sources*' \
-                -o -iname '*forge*1.7.10*sources*' \
-                -o -iname '*recomp*src*' \
-                -o -iname '*decompress*source*' \
-                -o -iname '*sources*' \) \
-                2>/dev/null | head -n 1 || true)"
+              hit="$(find "$d" -type d \( -iname '*decomp*sources*' -o -iname '*minecraft*sources*' -o -iname '*forge*1.7.10*sources*' -o -iname '*sources*' \) 2>/dev/null | head -n 1 || true)"
               if [ -n "$hit" ]; then
                 src_dir="$hit"
                 break
@@ -98,12 +93,13 @@ jobs:
           if [ -z "$src_dir" ]; then
             echo "Could not find a Minecraft sources directory"
             echo "Top build tree:"
-            find build -maxdepth 6 \( -type d -o -type f \) 2>/dev/null | sed -n '1,300p' || true
+            find build -maxdepth 5 \( -type d -o -type f \) 2>/dev/null | sed -n '1,300p' || true
             exit 0
           fi
 
           echo "Using sources dir: $src_dir"
 
+          # 打成 sources jar
           (
             cd "$src_dir"
             zip -qr "$GITHUB_WORKSPACE/dist/minecraft-1.7.10-sources.jar" .
