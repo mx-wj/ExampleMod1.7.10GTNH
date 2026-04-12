@@ -36,8 +36,6 @@
  *  net.minecraft.world.World
  */
 package net.minecraft.entity.titan;
-import net.minecraft.theTitans.perf.PerfSection;
-import net.minecraft.theTitans.perf.TitansPerf;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -63,6 +61,7 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.entity.titan.EntityWitherTurret;
 import net.minecraft.entity.titan.EntityWitherTurretGround;
 import net.minecraft.entity.titan.EntityWitherTurretMortar;
@@ -79,6 +78,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraft.theTitans.util.MinionOptimizationHelper;
 public class EntityWitherzillaMinion
 extends EntityMob
 implements IRangedAttackMob,
@@ -167,8 +167,6 @@ IMinion {
     }
 
     public void onLivingUpdate() {
-        long perfNs = TitansPerf.begin();
-        try {
         int j;
         int i;
         double d5;
@@ -237,11 +235,6 @@ IMinion {
                 this.worldObj.spawnParticle("mobSpell", this.posX + this.rand.nextGaussian() * 1.0, this.posY + (double)(this.rand.nextFloat() * 3.3f), this.posZ + this.rand.nextGaussian() * 1.0, (double)0.7f, (double)0.7f, (double)0.9f);
             }
         }
-    
-        }
-        finally {
-            TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate", perfNs);
-        }
     }
 
     protected boolean isAIEnabled() {
@@ -249,12 +242,10 @@ IMinion {
     }
 
     protected void updateAITasks() {
-        long perfNs = TitansPerf.begin();
-        try {
         if (this.getInvulTime() > 0) {
             int i = this.getInvulTime() - 1;
             if (i <= 0) {
-                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY + (double)this.getEyeHeight(), this.posZ, 7.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                this.worldObj.newExplosion((Entity)this, this.posX, this.posY + (double)this.getEyeHeight(), this.posZ, 7.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                 this.worldObj.playBroadcastSound(1013, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
             }
             this.setInvulTime(i);
@@ -264,6 +255,14 @@ IMinion {
         } else {
             int i1;
             int i;
+            if (!MinionOptimizationHelper.shouldRunHeavyAI(this)) {
+                if (this.getAttackTarget() != null) {
+                    this.func_82211_c(0, this.getAttackTarget().getEntityId());
+                } else {
+                    this.func_82211_c(0, 0);
+                }
+                return;
+            }
             super.updateAITasks();
             block0: for (i = 1; i < 3; ++i) {
                 if (this.ticksExisted < this.field_82223_h[i - 1]) continue;
@@ -341,11 +340,6 @@ IMinion {
                 this.heal(1.0f);
             }
         }
-    
-        }
-        finally {
-            TitansPerf.endWarn(PerfSection.ENTITY_AI, this.getClass().getSimpleName() + "#updateAITasks", perfNs);
-        }
     }
 
     public boolean canEntityDestroy(Block block, IBlockAccess world, int x, int y, int z, Entity entity) {
@@ -409,7 +403,7 @@ IMinion {
         double d6 = p_82209_2_ - d3;
         double d7 = p_82209_4_ - d4;
         double d8 = p_82209_6_ - d5;
-        EntityWitherzillaSkull entitywitherskull = new EntityWitherzillaSkull(this.worldObj, (EntityLivingBase)this, d6, d7, d8);
+        EntityWitherSkull entitywitherskull = new EntityWitherSkull(this.worldObj, (EntityLivingBase)this, d6, d7, d8);
         if (p_82209_8_) {
             entitywitherskull.setInvulnerable(true);
         }
