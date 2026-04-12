@@ -298,7 +298,7 @@ extends EntityLiving {
         if (!this.worldObj.isRemote) {
             switch (this.getSpiritType()) {
                 case 1: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntitySilverfishTitan omegafish = new EntitySilverfishTitan(this.worldObj);
                     omegafish.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     omegafish.func_82206_m();
@@ -306,7 +306,7 @@ extends EntityLiving {
                     break;
                 }
                 case 2: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 12.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 12.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityCaveSpiderTitan cavespidertitan = new EntityCaveSpiderTitan(this.worldObj);
                     cavespidertitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     cavespidertitan.func_82206_m();
@@ -314,7 +314,7 @@ extends EntityLiving {
                     break;
                 }
                 case 3: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 12.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 12.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntitySpiderTitan spidertitan = new EntitySpiderTitan(this.worldObj);
                     spidertitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     spidertitan.func_82206_m();
@@ -322,7 +322,7 @@ extends EntityLiving {
                     break;
                 }
                 case 4: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntitySkeletonTitan skeletontitan = new EntitySkeletonTitan(this.worldObj);
                     skeletontitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     skeletontitan.setSkeletonType(0);
@@ -331,7 +331,7 @@ extends EntityLiving {
                     break;
                 }
                 case 5: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntitySkeletonTitan witherskeletontitan = new EntitySkeletonTitan(this.worldObj);
                     witherskeletontitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     witherskeletontitan.setSkeletonType(1);
@@ -340,7 +340,7 @@ extends EntityLiving {
                     break;
                 }
                 case 6: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityZombieTitan zombietitan = new EntityZombieTitan(this.worldObj);
                     zombietitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     zombietitan.onSpawnWithEgg(null);
@@ -352,7 +352,7 @@ extends EntityLiving {
                     break;
                 }
                 case 7: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityCreeperTitan creepertitan = new EntityCreeperTitan(this.worldObj);
                     creepertitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     creepertitan.func_82206_m();
@@ -362,7 +362,7 @@ extends EntityLiving {
                     break;
                 }
                 case 8: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 18.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityPigZombieTitan pigzombietitan = new EntityPigZombieTitan(this.worldObj);
                     pigzombietitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     pigzombietitan.func_82206_m();
@@ -372,7 +372,7 @@ extends EntityLiving {
                     break;
                 }
                 case 9: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 16.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 16.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityBlazeTitan blazetitan = new EntityBlazeTitan(this.worldObj);
                     blazetitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     blazetitan.func_82206_m();
@@ -380,7 +380,7 @@ extends EntityLiving {
                     break;
                 }
                 case 10: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 45.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 45.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityEnderColossus endercolossus = new EntityEnderColossus(this.worldObj);
                     endercolossus.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     endercolossus.func_82206_m();
@@ -388,7 +388,7 @@ extends EntityLiving {
                     break;
                 }
                 case 11: {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 8.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 8.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityGhastTitan ghasttitan = new EntityGhastTitan(this.worldObj);
                     ghasttitan.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     ghasttitan.func_82206_m();
@@ -425,7 +425,7 @@ extends EntityLiving {
                         ((EntityPlayer)this.prevEntity).setHealth(0.0f);
                         ((EntityPlayer)this.prevEntity).getDataWatcher().updateObject(6, (Object)Float.valueOf(MathHelper.clamp_float((float)0.0f, (float)0.0f, (float)((EntityPlayer)this.prevEntity).getMaxHealth())));
                     }
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 7.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 7.0f, true, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     EntityWitherzilla witherzilla = new EntityWitherzilla(this.worldObj);
                     witherzilla.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
                     witherzilla.func_82206_m();

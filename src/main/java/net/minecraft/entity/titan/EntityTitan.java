@@ -593,7 +593,7 @@ IBossDisplayData {
     }
 
     protected void inactDeathAction() {
-        this.worldObj.newExplosion((Entity)this, this.posX, this.posY + 3.0, this.posZ, 0.0f, false, false);
+        net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY + 3.0, this.posZ, 0.0f, false, false);
         if (!this.worldObj.isRemote && this.worldObj.getGameRules().getGameRuleBooleanValue("doMobLoot")) {
             this.dropFewItems(true, 0);
             this.dropEquipment(true, 0);
@@ -1178,7 +1178,7 @@ IBossDisplayData {
             this.getAttackTarget().playSound("random.explode", 2.0f, 1.0f + this.rand.nextFloat());
             this.damageBypassEntity(this.getAttackTarget(), new DamageSource("infinity").setDamageBypassesArmor().setDamageAllowedInCreativeMode().setDamageIsAbsolute(), this.getAttackTarget().getHealth() / 2.0f);
             if (this.getAttackTarget().getHealth() <= 1.0f) {
-                this.worldObj.createExplosion((Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 7.0f, false);
+                net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 7.0f, false);
                 this.getAttackTarget().setDead();
             }
         }
@@ -1381,7 +1381,7 @@ IBossDisplayData {
             int i = this.getInvulTime() - 1;
             if (i <= 0) {
                 if (!(this instanceof EntitySnowGolemTitan || this instanceof EntityIronGolemTitan || this instanceof EntityGargoyleTitan)) {
-                    this.worldObj.newExplosion((Entity)this, this.posX, this.posY + (double)(this.height / 2.0f), this.posZ, this.height, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY + (double)(this.height / 2.0f), this.posZ, this.height, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                 }
                 this.worldObj.playBroadcastSound(1013, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
                 this.destroyBlocksInAABB(this.boundingBox);
@@ -1865,7 +1865,7 @@ IBossDisplayData {
                 damagedEntity.attackEntityFrom(new DamageSource("other").setDamageBypassesArmor().setDamageIsAbsolute().setDamageAllowedInCreativeMode(), 100.0f);
             }
             if (damagedEntity instanceof EntityDragon) {
-                this.worldObj.newExplosion(null, damagedEntity.posX, damagedEntity.posY, damagedEntity.posZ, 6.0f, false, false);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, null, damagedEntity.posX, damagedEntity.posY, damagedEntity.posZ, 6.0f, false, false);
             }
             this.renderYawOffset = this.rotationYaw = this.rotationYawHead;
             if (EnchantmentHelper.getFireAspectModifier((EntityLivingBase)this) > 0) {

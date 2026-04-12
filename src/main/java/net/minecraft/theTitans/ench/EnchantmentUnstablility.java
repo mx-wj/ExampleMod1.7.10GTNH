@@ -41,7 +41,7 @@ extends Enchantment {
 
     public void func_151368_a(EntityLivingBase user, Entity target, int level) {
         boolean flag = user.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-        user.worldObj.createExplosion((Entity)user, target.posX, target.posY, target.posZ, 1.0f + 0.75f * (float)level, flag);
+        net.minecraft.theTitans.util.FastExplosion.createExplosion(user.worldObj, (Entity)user, target.posX, target.posY, target.posZ, 1.0f + 0.75f * (float)level, flag);
     }
 }
 

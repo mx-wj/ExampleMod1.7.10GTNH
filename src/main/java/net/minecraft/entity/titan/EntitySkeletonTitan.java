@@ -537,8 +537,8 @@ IEntityMultiPartTitan {
             int i = this.getKnockbackAmount();
             this.attackChoosenEntity((Entity)this.getAttackTarget(), da * 3.0f, i);
             this.getAttackTarget().motionY += (double)(2.0f + this.rand.nextFloat());
-            this.worldObj.newExplosion((Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 6.0f, false, false);
-            this.worldObj.newExplosion((Entity)this, this.posX + dx, this.posY + (double)dis + 4.0, this.posZ + dz, 3.0f, false, false);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 6.0f, false, false);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX + dx, this.posY + (double)dis + 4.0, this.posZ + dz, 3.0f, false, false);
             this.getAttackTarget().attackEntityFrom(DamageSourceExtra.lightningBolt, da);
             this.worldObj.addWeatherEffect((Entity)new EntityGammaLightning(this.worldObj, this.posX + dx, this.posY + (double)dis + 4.0, this.posZ + dz, this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f));
             this.worldObj.addWeatherEffect((Entity)new EntityGammaLightning(this.worldObj, this.posX + dx, this.posY + (double)dis + 4.0, this.posZ + dz, this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f));
@@ -565,13 +565,13 @@ IEntityMultiPartTitan {
             this.playSound("mob.wither.shoot", 20.0f, 1.0f);
             float da = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
             int i = this.getKnockbackAmount();
-            this.worldObj.newExplosion((Entity)this, this.posX - (double)xfac * ((double)dis * 0.9), this.posY + (double)dis * 1.25, this.posZ + (double)zfac * ((double)dis * 0.9), 3.0f, false, false);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX - (double)xfac * ((double)dis * 0.9), this.posY + (double)dis * 1.25, this.posZ + (double)zfac * ((double)dis * 0.9), 3.0f, false, false);
             this.worldObj.addWeatherEffect((Entity)new EntityGammaLightning(this.worldObj, this.posX - (double)xfac * ((double)dis * 0.9), this.posY + (double)dis * 1.25, this.posZ + (double)zfac * ((double)dis * 0.9), this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f));
             if (this.getAttackTarget() != null) {
                 this.attackChoosenEntity((Entity)this.getAttackTarget(), da * 5.0f, i);
                 this.getAttackTarget().attackEntityFrom(DamageSourceExtra.lightningBolt, da);
                 this.getAttackTarget().motionY += 1.0 + this.rand.nextDouble();
-                this.worldObj.newExplosion((Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 3.0f, false, false);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 3.0f, false, false);
                 this.worldObj.addWeatherEffect((Entity)new EntityGammaLightning(this.worldObj, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f, this.getSkeletonType() == 1 ? 0.0f : 0.5f));
             }
         }
@@ -655,7 +655,7 @@ IEntityMultiPartTitan {
                     }
                     if (entity instanceof EntityGargoyleTitanFireball) {
                         this.playSound("thetitans:titanpunch", 10.0f, 1.0f);
-                        this.worldObj.newExplosion((Entity)(((EntityGargoyleTitanFireball)entity).shootingEntity != null ? ((EntityGargoyleTitanFireball)entity).shootingEntity : (EntityGargoyleTitanFireball)entity), ((EntityGargoyleTitanFireball)entity).posX, ((EntityGargoyleTitanFireball)entity).posY, ((EntityGargoyleTitanFireball)entity).posZ, 8.0f, false, false);
+                        net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)(((EntityGargoyleTitanFireball)entity).shootingEntity != null ? ((EntityGargoyleTitanFireball)entity).shootingEntity : (EntityGargoyleTitanFireball)entity), ((EntityGargoyleTitanFireball)entity).posX, ((EntityGargoyleTitanFireball)entity).posY, ((EntityGargoyleTitanFireball)entity).posZ, 8.0f, false, false);
                         this.attackEntityFromPart(this.partArray[i], DamageSource.causeFireballDamage((EntityFireball)((EntityGargoyleTitanFireball)entity), (Entity)(((EntityGargoyleTitanFireball)entity).shootingEntity != null ? ((EntityGargoyleTitanFireball)entity).shootingEntity : (EntityGargoyleTitanFireball)entity)), 1000.0f);
                         entity.setDead();
                     }

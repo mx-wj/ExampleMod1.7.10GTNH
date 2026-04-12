@@ -484,9 +484,9 @@ implements IRangedAttackMob {
         }
         if (this.rand.nextInt(120) == 0 && this.getAttackTarget() != null && !this.worldObj.isRemote) {
             if (TheTitans.NightmareMode) {
-                this.worldObj.newExplosion((Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 14.0f, true, true);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 14.0f, true, true);
             } else {
-                this.worldObj.newExplosion((Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 7.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, 7.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
             }
         }
         this.motionY = !this.isArmored() ? (this.motionY *= 0.1) : (this.motionY *= 0.9);

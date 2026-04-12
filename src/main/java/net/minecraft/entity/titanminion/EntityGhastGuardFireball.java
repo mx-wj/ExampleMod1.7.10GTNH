@@ -50,7 +50,7 @@ extends EntityLargeFireball {
                 }
             }
             boolean flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-            this.worldObj.newExplosion((Entity)null, this.posX, this.posY, this.posZ, (float)this.field_92057_e, flag, flag);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)null, this.posX, this.posY, this.posZ, (float)this.field_92057_e, flag, flag);
             this.setDead();
         }
     }

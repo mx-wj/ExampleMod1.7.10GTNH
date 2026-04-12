@@ -353,7 +353,7 @@ implements IEntityMultiPartTitan {
                     }
                     if (entity instanceof EntityGargoyleTitanFireball) {
                         this.playSound("thetitans:titanpunch", 10.0f, 1.0f);
-                        this.worldObj.newExplosion((Entity)(((EntityGargoyleTitanFireball)entity).shootingEntity != null ? ((EntityGargoyleTitanFireball)entity).shootingEntity : (EntityGargoyleTitanFireball)entity), ((EntityGargoyleTitanFireball)entity).posX, ((EntityGargoyleTitanFireball)entity).posY, ((EntityGargoyleTitanFireball)entity).posZ, 8.0f, false, false);
+                        net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)(((EntityGargoyleTitanFireball)entity).shootingEntity != null ? ((EntityGargoyleTitanFireball)entity).shootingEntity : (EntityGargoyleTitanFireball)entity), ((EntityGargoyleTitanFireball)entity).posX, ((EntityGargoyleTitanFireball)entity).posY, ((EntityGargoyleTitanFireball)entity).posZ, 8.0f, false, false);
                         this.attackEntityFromPart(this.partArray[i2], DamageSource.causeFireballDamage((EntityFireball)((EntityGargoyleTitanFireball)entity), (Entity)(((EntityGargoyleTitanFireball)entity).shootingEntity != null ? ((EntityGargoyleTitanFireball)entity).shootingEntity : (EntityGargoyleTitanFireball)entity)), 1000.0f);
                         entity.setDead();
                     }
@@ -717,7 +717,7 @@ implements IEntityMultiPartTitan {
                             this.field_179469_a.worldObj.spawnEntityInWorld((Entity)entitylargefireball);
                             entitylargefireball.setFireballID(2);
                             if (this.field_179469_a.getRNG().nextInt(50) != 0) continue;
-                            this.field_179469_a.worldObj.newExplosion((Entity)this.field_179469_a, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, 4.0f, false, false);
+                            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.field_179469_a.worldObj, (Entity)this.field_179469_a, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, 4.0f, false, false);
                             entitylivingbase.attackEntityFrom(DamageSourceExtra.lightningBolt, 49.0f);
                             float f2 = (float)EntityBlazeTitan.this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
                             int i1 = EntityBlazeTitan.this.getKnockbackAmount();

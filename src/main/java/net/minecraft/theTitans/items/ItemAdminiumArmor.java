@@ -240,7 +240,7 @@ extends ItemHarcadiumArmor {
                         }
                     }
                 }
-                player.worldObj.createExplosion((Entity)player, player.posX, player.posY - 2.0, player.posZ, 3.0f, player.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                net.minecraft.theTitans.util.FastExplosion.createExplosion(player.worldObj, (Entity)player, player.posX, player.posY - 2.0, player.posZ, 3.0f, player.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                 if (list != null && !list.isEmpty()) {
                     for (int i1 = 0; i1 < list.size(); ++i1) {
                         Entity entity = (Entity)list.get(i1);

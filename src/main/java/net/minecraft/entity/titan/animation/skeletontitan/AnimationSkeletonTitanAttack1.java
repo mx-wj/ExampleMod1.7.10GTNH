@@ -53,7 +53,7 @@ extends AIAnimation {
             float f3 = this.entity.renderYawOffset * (float)Math.PI / 180.0f;
             float f11 = MathHelper.sin((float)f3);
             float f4 = MathHelper.cos((float)f3);
-            this.entity.worldObj.newExplosion((Entity)this.entity, this.entity.posX - (double)(f11 * d0), this.entity.posY, this.entity.posZ + (double)(f4 * d0), 5.0f, false, false);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.entity.worldObj, (Entity)this.entity, this.entity.posX - (double)(f11 * d0), this.entity.posY, this.entity.posZ + (double)(f4 * d0), 5.0f, false, false);
             float f = (float)this.entity.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
             int i = this.entity.getKnockbackAmount();
             this.entity.collideWithEntities(this.entity.pelvis, this.entity.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this.entity, this.entity.pelvis.boundingBox.expand(16.0, 8.0, 16.0)));

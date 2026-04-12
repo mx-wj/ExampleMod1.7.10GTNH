@@ -110,7 +110,7 @@ extends ItemSword {
                     ++target.deathTime;
                 }
                 if (target instanceof EntityTitan && ((EntityTitan)target).canBeHurtByPlayer() && !(target instanceof EntityWitherzilla) && ((EntityTitan)target).getInvulTime() < 1) {
-                    target.worldObj.newExplosion(null, target.posX, target.posY + (double)(target.height * 0.5f), target.posZ, 7.0f, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(target.worldObj, null, target.posX, target.posY + (double)(target.height * 0.5f), target.posZ, 7.0f, false, false);
                     target.playSound("thetitans:titanpunch", 10.0f, 1.0f);
                     ((EntityTitan)target).setTitanHealth(((EntityTitan)target).getHealth() - 1000.0f);
                 }

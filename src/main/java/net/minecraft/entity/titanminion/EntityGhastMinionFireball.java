@@ -55,7 +55,7 @@ extends EntityLargeFireball {
                     movingObject.entityHit.hurtResistantTime = 0;
                     ((EntityLiving)this.shootingEntity).attackEntityAsMob(movingObject.entityHit);
                     movingObject.entityHit.setFire((int)((EntityLiving)this.shootingEntity).getEntityAttribute(SharedMonsterAttributes.attackDamage).getBaseValue());
-                    this.worldObj.newExplosion((Entity)this.shootingEntity, this.posX, this.posY, this.posZ, (float)this.field_92057_e, flag, flag);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this.shootingEntity, this.posX, this.posY, this.posZ, (float)this.field_92057_e, flag, flag);
                     this.setDead();
                 }
             } else {
@@ -89,7 +89,7 @@ extends EntityLargeFireball {
                 }
                 if (this.worldObj.isAirBlock(i, j, k)) {
                     this.worldObj.setBlock(i, j, k, (Block)Blocks.fire);
-                    this.worldObj.newExplosion((Entity)(this.shootingEntity != null ? this.shootingEntity : this), (double)i, (double)j, (double)k, (float)this.field_92057_e, flag, flag);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)(this.shootingEntity != null ? this.shootingEntity : this), (double)i, (double)j, (double)k, (float)this.field_92057_e, flag, flag);
                     this.setDead();
                 }
             }

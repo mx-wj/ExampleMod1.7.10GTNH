@@ -65,7 +65,7 @@ extends AIAnimation {
             vec3 = this.entity.getLook(1.0f);
             dx = vec3.xCoord * d8;
             dz = vec3.zCoord * d8;
-            this.entity.worldObj.newExplosion((Entity)this.entity, this.entity.posX + dx, this.entity.posY + 10.0, this.entity.posZ + dz, 3.0f, false, false);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.entity.worldObj, (Entity)this.entity, this.entity.posX + dx, this.entity.posY + 10.0, this.entity.posZ + dz, 3.0f, false, false);
             f = (float)this.entity.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
             i = this.entity.getKnockbackAmount();
             this.entity.shakeNearbyPlayerCameras(20000.0);

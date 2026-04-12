@@ -110,7 +110,7 @@ extends EntityWitherSkull {
                     }
                 }
             }
-            this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 2.0f + (float)this.explosivePower, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 2.0f + (float)this.explosivePower, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
             this.setDead();
         }
     }
@@ -134,12 +134,12 @@ extends EntityWitherSkull {
             double d4 = this.assginedEntity instanceof EntityTitan ? (double)this.assginedEntity.height * 0.5 : (double)this.assginedEntity.getEyeHeight();
             if (this.getDistanceSq(d, d3 + d4, this.assginedEntity.posZ) < 9.0) {
                 this.onImpact(new MovingObjectPosition(this.assginedEntity));
-                this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 2.0f + (float)this.explosivePower, false, false);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 2.0f + (float)this.explosivePower, false, false);
                 this.setDead();
             }
         }
         if (this.lifetime >= 200) {
-            this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 2.0f + (float)this.explosivePower, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 2.0f + (float)this.explosivePower, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
             this.setDead();
         }
         super.onUpdate();

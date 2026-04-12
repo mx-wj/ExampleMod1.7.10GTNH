@@ -131,7 +131,7 @@ extends EntityWitherSkull {
                     }
                 }
             }
-            this.worldObj.newExplosion((Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY, this.posZ, 14.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY, this.posZ, 14.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
             this.worldObj.playSoundEffect(this.posX, this.posY, this.posZ, "random.explode", 4.0f, (1.0f + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2f) * 0.6f);
             this.worldObj.playSoundEffect(this.posX, this.posY, this.posZ, "thetitans:mortarHit", 0.5f, 1.0f);
             this.worldObj.playSoundEffect(this.posX, this.posY, this.posZ, "thetitans:mortarHit", 2.0f, 1.0f);
@@ -147,7 +147,7 @@ extends EntityWitherSkull {
         super.onUpdate();
         ++this.lifetime;
         if (this.lifetime >= 1000) {
-            this.worldObj.newExplosion((Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY, this.posZ, 14.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY, this.posZ, 14.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
             this.worldObj.playSoundEffect(this.posX, this.posY, this.posZ, "random.explode", 4.0f, (1.0f + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2f) * 0.6f);
             this.worldObj.playSoundEffect(this.posX, this.posY, this.posZ, "thetitans:mortarHit", 0.5f, 1.0f);
             this.worldObj.playSoundEffect(this.posX, this.posY, this.posZ, "thetitans:mortarHit", 2.0f, 1.0f);

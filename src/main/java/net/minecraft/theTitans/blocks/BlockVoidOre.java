@@ -118,7 +118,7 @@ extends BlockOre {
             int i1 = EnchantmentHelper.getFortuneModifier((EntityLivingBase)p_149636_2_);
             this.dropBlockAsItem(p_149636_1_, p_149636_3_, p_149636_4_, p_149636_5_, p_149636_6_, i1);
             this.harvesters.set(null);
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
         }
     }
 

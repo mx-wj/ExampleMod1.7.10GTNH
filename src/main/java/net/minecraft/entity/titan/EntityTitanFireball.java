@@ -113,7 +113,7 @@ extends EntityFireball {
                         this.worldObj.setBlock(i, j, k, Blocks.snow_layer);
                     }
                 }
-                this.worldObj.newExplosion((Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY, this.posZ, this.explosionRadius, this.canCauseFires ? this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing") : false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY, this.posZ, this.explosionRadius, this.canCauseFires ? this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing") : false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                 this.setDead();
             }
         }

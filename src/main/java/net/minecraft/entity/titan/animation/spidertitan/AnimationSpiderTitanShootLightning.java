@@ -64,8 +64,8 @@ extends AIAnimation {
             int i = this.entity.getKnockbackAmount();
             this.entity.attackChoosenEntity((Entity)this.entity.getAttackTarget(), f, i);
             this.entity.getAttackTarget().motionY += 2.0;
-            this.entity.worldObj.newExplosion((Entity)this.entity, this.entity.getAttackTarget().posX, this.entity.getAttackTarget().posY, this.entity.getAttackTarget().posZ, 2.0f, false, false);
-            this.entity.worldObj.newExplosion((Entity)this.entity, this.entity.posX + dx, this.entity.posY + 8.0, this.entity.posZ + dz, 1.0f, false, false);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.entity.worldObj, (Entity)this.entity, this.entity.getAttackTarget().posX, this.entity.getAttackTarget().posY, this.entity.getAttackTarget().posZ, 2.0f, false, false);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.entity.worldObj, (Entity)this.entity, this.entity.posX + dx, this.entity.posY + 8.0, this.entity.posZ + dz, 1.0f, false, false);
             this.entity.getAttackTarget().attackEntityFrom(DamageSourceExtra.lightningBolt, f);
             this.entity.worldObj.addWeatherEffect((Entity)new EntityGammaLightning(this.entity.worldObj, this.entity.posX + dx, this.entity.posY + 3.0, this.entity.posZ + dz, 0.6f, 0.1f, 0.2f));
             this.entity.worldObj.addWeatherEffect((Entity)new EntityGammaLightning(this.entity.worldObj, this.entity.getAttackTarget().posX, this.entity.getAttackTarget().posY, this.entity.getAttackTarget().posZ, 0.6f, 0.1f, 0.2f));
@@ -74,7 +74,7 @@ extends AIAnimation {
                 for (int i1 = 0; i1 < list1.size(); ++i1) {
                     Entity entity1 = (Entity)list1.get(i1);
                     if (!this.entity.canAttackClass(entity1.getClass())) continue;
-                    this.entity.worldObj.newExplosion((Entity)this.entity, entity1.posX, entity1.posY, entity1.posZ, 2.0f, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.entity.worldObj, (Entity)this.entity, entity1.posX, entity1.posY, entity1.posZ, 2.0f, false, false);
                     this.entity.attackChoosenEntity(entity1, f, i);
                     entity1.attackEntityFrom(DamageSourceExtra.lightningBolt, f);
                     this.entity.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.entity.worldObj, entity1.posX, entity1.posY, entity1.posZ));

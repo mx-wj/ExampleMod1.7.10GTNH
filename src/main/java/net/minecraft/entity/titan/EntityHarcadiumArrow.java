@@ -244,7 +244,7 @@ extends EntityArrow {
                             break;
                         }
                         case 4: {
-                            this.worldObj.newExplosion((Entity)this, this.posX, this.posY, this.posZ, 2.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 2.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                         }
                     }
                     this.setDead();

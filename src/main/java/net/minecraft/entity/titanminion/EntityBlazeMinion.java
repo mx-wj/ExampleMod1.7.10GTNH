@@ -367,7 +367,7 @@ ITemplar {
             }
             List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(8.0, 8.0, 8.0));
             if (!this.worldObj.isRemote && list11 != null && !list11.isEmpty() && (this.ticksExisted + this.getEntityId()) % (this.getHealth() < this.getMaxHealth() / 2.0f ? 40 : 160) == 0) {
-                this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
+                net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
                 for (int i1 = 0; i1 < list11.size(); ++i1) {
                     Entity entity = (Entity)list11.get(i1);
                     if (entity == null || !(entity instanceof EntityLivingBase) || !this.canAttackClass(entity.getClass())) continue;
@@ -656,7 +656,7 @@ ITemplar {
 
     @Override
     public void TransformEntity(Entity entity) {
-        entity.worldObj.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 16.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+        net.minecraft.theTitans.util.FastExplosion.newExplosion(entity.worldObj, entity, entity.posX, entity.posY, entity.posZ, 16.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
         EntityBlazeTitan entitytitan = new EntityBlazeTitan(entity.worldObj);
         entitytitan.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, 0.0f);
         entity.setDead();

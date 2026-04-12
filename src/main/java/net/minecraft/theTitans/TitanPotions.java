@@ -68,7 +68,7 @@ extends Potion {
                 p_76394_1_.playSound("random.explode", 2.0f, 1.0f + p_76394_1_.getRNG().nextFloat());
                 p_76394_1_.setHealth(p_76394_1_.getHealth() / 2.0f);
                 if (p_76394_1_.getHealth() <= 1.0f) {
-                    p_76394_1_.worldObj.createExplosion(null, p_76394_1_.posX, p_76394_1_.posY, p_76394_1_.posZ, 7.0f, false);
+                    net.minecraft.theTitans.util.FastExplosion.createExplosion(p_76394_1_.worldObj, null, p_76394_1_.posX, p_76394_1_.posY, p_76394_1_.posZ, 7.0f, false);
                     p_76394_1_.setDead();
                 }
             }
@@ -86,7 +86,7 @@ extends Potion {
                 p_76394_1_.playSound("random.explode", 2.0f, 1.0f + p_76394_1_.getRNG().nextFloat());
                 p_76394_1_.setHealth(p_76394_1_.getHealth() / 2.0f);
                 if (p_76394_1_.getHealth() <= 1.0f) {
-                    p_76394_1_.worldObj.createExplosion(null, p_76394_1_.posX, p_76394_1_.posY, p_76394_1_.posZ, 7.0f, false);
+                    net.minecraft.theTitans.util.FastExplosion.createExplosion(p_76394_1_.worldObj, null, p_76394_1_.posX, p_76394_1_.posY, p_76394_1_.posZ, 7.0f, false);
                     p_76394_1_.setDead();
                 }
             }

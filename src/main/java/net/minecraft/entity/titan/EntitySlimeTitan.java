@@ -576,7 +576,7 @@ extends EntityTitan {
 
     @Override
     protected void inactDeathAction() {
-        this.worldObj.newExplosion((Entity)this, this.posX, this.posY + 3.0, this.posZ, 0.0f, false, false);
+        net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY + 3.0, this.posZ, 0.0f, false, false);
         if (!this.worldObj.isRemote && this.worldObj.getGameRules().getGameRuleBooleanValue("doMobLoot")) {
             this.dropFewItems(true, 0);
             this.dropEquipment(true, 0);

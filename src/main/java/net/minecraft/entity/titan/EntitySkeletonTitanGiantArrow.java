@@ -102,7 +102,7 @@ extends Entity {
                         ((EntityTitan)this.shootingEntity).attackChoosenEntity(movingObject.entityHit, f, 10);
                         ((EntityTitan)this.shootingEntity).destroyBlocksInAABB(this.boundingBox.expand(5.0, 5.0, 5.0));
                     }
-                    this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, 10.0f, false);
+                    net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 10.0f, false);
                     this.setDead();
                 }
             }

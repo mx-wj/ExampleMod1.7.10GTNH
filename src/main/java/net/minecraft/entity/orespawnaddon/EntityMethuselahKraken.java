@@ -1009,7 +1009,7 @@ extends Kraken {
                         e.setFire(5);
                         this.worldObj.playSoundAtEntity((Entity)e, "random.explode", 0.5f, 1.0f + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.5f);
                         if (!this.worldObj.isRemote) {
-                            this.worldObj.createExplosion((Entity)this, e.posX, e.posY, e.posZ, 3.0f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                            net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, e.posX, e.posY, e.posZ, 3.0f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                         }
                         this.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.worldObj, e.posX, e.posY + 1.0, e.posZ));
                         this.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.worldObj, this.posX, this.posY - 30.0, this.posZ));

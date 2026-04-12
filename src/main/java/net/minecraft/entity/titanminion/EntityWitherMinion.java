@@ -294,7 +294,7 @@ IMinion {
         if (this.getInvulTime() > 0) {
             int i = this.getInvulTime() - 1;
             if (i <= 0) {
-                this.worldObj.newExplosion((Entity)this, this.posX, this.posY + (double)this.getEyeHeight(), this.posZ, 7.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY + (double)this.getEyeHeight(), this.posZ, 7.0f, false, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                 this.worldObj.playBroadcastSound(1013, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
             }
             this.setInvulTime(i);

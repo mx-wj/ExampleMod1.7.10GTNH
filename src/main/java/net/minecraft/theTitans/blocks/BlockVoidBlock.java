@@ -73,7 +73,7 @@ extends Block {
     public void onEntityCollidedWithBlock(World p_149670_1_, int p_149670_2_, int p_149670_3_, int p_149670_4_, Entity p_149670_5_) {
         p_149670_5_.attackEntityFrom(DamageSource.outOfWorld, 36.0f);
         if (p_149670_5_ != null && !p_149670_5_.worldObj.isRemote) {
-            p_149670_5_.worldObj.newExplosion(null, p_149670_5_.posX, p_149670_5_.posY, p_149670_5_.posZ, 3.0f, false, p_149670_5_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149670_5_.worldObj, null, p_149670_5_.posX, p_149670_5_.posY, p_149670_5_.posZ, 3.0f, false, p_149670_5_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
         }
         p_149670_5_.motionX *= 0.2;
         p_149670_5_.motionZ *= 0.2;
@@ -112,15 +112,15 @@ extends Block {
             this.harvesters.set(p_149636_2_);
             this.dropBlockAsItem(p_149636_1_, p_149636_3_, p_149636_4_, p_149636_5_, p_149636_6_, 0);
             this.harvesters.set(null);
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
-            p_149636_2_.worldObj.newExplosion(null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(p_149636_2_.worldObj, null, p_149636_2_.posX, p_149636_2_.posY, p_149636_2_.posZ, 1.0f, false, p_149636_2_.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops"));
         }
     }
 

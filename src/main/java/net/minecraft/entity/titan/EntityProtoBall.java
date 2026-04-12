@@ -72,7 +72,7 @@ extends EntityThrowable {
                     entityGhastGuard.onSpawnWithEgg(null);
                     entityGhastGuard.motionY += 1.0;
                     flag2 = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                    this.worldObj.newExplosion((Entity)entityGhastGuard, entityGhastGuard.posX, entityGhastGuard.posY + 6.0, entityGhastGuard.posZ, 12.0f, false, flag2);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entityGhastGuard, entityGhastGuard.posX, entityGhastGuard.posY + 6.0, entityGhastGuard.posZ, 12.0f, false, flag2);
                     entityGhastGuard.master = (EntityPigZombieTitan)this.getThrower();
                 } else {
                     switch (this.rand.nextInt(4)) {
@@ -84,7 +84,7 @@ extends EntityThrowable {
                                 entitychicken2.onSpawnWithEgg(null);
                                 entitychicken2.setMinionType(3);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken2, entitychicken2.posX, entitychicken2.posY + 2.0, entitychicken2.posZ, 6.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken2, entitychicken2.posX, entitychicken2.posY + 2.0, entitychicken2.posZ, 6.0f, false, flag);
                                 entitychicken2.master = (EntityPigZombieTitan)this.getThrower();
                             }
                             break;
@@ -97,7 +97,7 @@ extends EntityThrowable {
                                 entitychicken3.onSpawnWithEgg(null);
                                 entitychicken3.setMinionType(2);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken3, entitychicken3.posX, entitychicken3.posY + 2.0, entitychicken3.posZ, 4.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken3, entitychicken3.posX, entitychicken3.posY + 2.0, entitychicken3.posZ, 4.0f, false, flag);
                                 entitychicken3.master = (EntityPigZombieTitan)this.getThrower();
                             }
                             break;
@@ -110,7 +110,7 @@ extends EntityThrowable {
                                 entitychicken4.onSpawnWithEgg(null);
                                 entitychicken4.setMinionType(1);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken4, entitychicken4.posX, entitychicken4.posY + 2.0, entitychicken4.posZ, 3.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken4, entitychicken4.posX, entitychicken4.posY + 2.0, entitychicken4.posZ, 3.0f, false, flag);
                                 entitychicken4.master = (EntityPigZombieTitan)this.getThrower();
                             }
                             break;
@@ -123,7 +123,7 @@ extends EntityThrowable {
                                 entitychicken5.onSpawnWithEgg(null);
                                 entitychicken5.setMinionType(0);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken5, entitychicken5.posX, entitychicken5.posY + 2.0, entitychicken5.posZ, 2.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken5, entitychicken5.posX, entitychicken5.posY + 2.0, entitychicken5.posZ, 2.0f, false, flag);
                                 entitychicken5.master = (EntityPigZombieTitan)this.getThrower();
                             }
                             break;
@@ -138,7 +138,7 @@ extends EntityThrowable {
                     this.worldObj.spawnEntityInWorld((Entity)entityGiantZombie);
                     entityGiantZombie.onSpawnWithEgg(null);
                     flag2 = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                    this.worldObj.newExplosion((Entity)entityGiantZombie, entityGiantZombie.posX, entityGiantZombie.posY + 6.0, entityGiantZombie.posZ, 12.0f, false, flag2);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entityGiantZombie, entityGiantZombie.posX, entityGiantZombie.posY + 6.0, entityGiantZombie.posZ, 12.0f, false, flag2);
                     entityGiantZombie.master = (EntityZombieTitan)this.getThrower();
                 } else {
                     switch (this.rand.nextInt(4)) {
@@ -150,7 +150,7 @@ extends EntityThrowable {
                                 entitychicken6.onSpawnWithEgg(null);
                                 entitychicken6.setMinionType(3);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken6, entitychicken6.posX, entitychicken6.posY + 2.0, entitychicken6.posZ, 6.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken6, entitychicken6.posX, entitychicken6.posY + 2.0, entitychicken6.posZ, 6.0f, false, flag);
                                 entitychicken6.master = (EntityZombieTitan)this.getThrower();
                             }
                             break;
@@ -163,7 +163,7 @@ extends EntityThrowable {
                                 entitychicken7.onSpawnWithEgg(null);
                                 entitychicken7.setMinionType(2);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken7, entitychicken7.posX, entitychicken7.posY + 2.0, entitychicken7.posZ, 4.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken7, entitychicken7.posX, entitychicken7.posY + 2.0, entitychicken7.posZ, 4.0f, false, flag);
                                 entitychicken7.master = (EntityZombieTitan)this.getThrower();
                             }
                             break;
@@ -176,7 +176,7 @@ extends EntityThrowable {
                                 entitychicken8.onSpawnWithEgg(null);
                                 entitychicken8.setMinionType(1);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken8, entitychicken8.posX, entitychicken8.posY + 2.0, entitychicken8.posZ, 3.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken8, entitychicken8.posX, entitychicken8.posY + 2.0, entitychicken8.posZ, 3.0f, false, flag);
                                 entitychicken8.master = (EntityZombieTitan)this.getThrower();
                             }
                             break;
@@ -189,7 +189,7 @@ extends EntityThrowable {
                                 entitychicken9.onSpawnWithEgg(null);
                                 entitychicken9.setMinionType(0);
                                 flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                                this.worldObj.newExplosion((Entity)entitychicken9, entitychicken9.posX, entitychicken9.posY + 2.0, entitychicken9.posZ, 2.0f, false, flag);
+                                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)entitychicken9, entitychicken9.posX, entitychicken9.posY + 2.0, entitychicken9.posZ, 2.0f, false, flag);
                                 entitychicken9.master = (EntityZombieTitan)this.getThrower();
                             }
                             break;

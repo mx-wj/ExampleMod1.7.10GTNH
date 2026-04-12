@@ -353,7 +353,7 @@ extends ItemSword {
                 for (int i11 = 0; i11 < list1.size(); ++i11) {
                     Entity entity1 = (Entity)list1.get(i11);
                     if (entity1 == null || !(entityIn.getDistanceSqToEntity(entity1) < 100.0) || !(entity1 instanceof EntityArrow) && !(entity1 instanceof EntityFireball) && !(entity1 instanceof EntityThrowable) && !(entity1 instanceof EntityTNTPrimed)) continue;
-                    entity1.worldObj.newExplosion(entityIn, entity1.posX, entity1.posY, entity1.posZ, entity1.width, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(entity1.worldObj, entityIn, entity1.posX, entity1.posY, entity1.posZ, entity1.width, false, false);
                     entity1.setDead();
                 }
             }
@@ -417,11 +417,11 @@ extends ItemSword {
             for (int i11 = 0; i11 < list1.size(); ++i11) {
                 Entity entity1 = (Entity)list1.get(i11);
                 if (entity1 instanceof EntityTNTPrimed && !entity1.isEntityInvulnerable()) {
-                    entity1.worldObj.newExplosion((Entity)entityLiving, entity1.posX, entity1.posY, entity1.posZ, 4.0f, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(entity1.worldObj, (Entity)entityLiving, entity1.posX, entity1.posY, entity1.posZ, 4.0f, false, false);
                     entity1.setDead();
                 }
                 if (entity1 instanceof EntityFireball && !entity1.isEntityInvulnerable()) {
-                    entity1.worldObj.newExplosion((Entity)entityLiving, entity1.posX, entity1.posY, entity1.posZ, 0.0f, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(entity1.worldObj, (Entity)entityLiving, entity1.posX, entity1.posY, entity1.posZ, 0.0f, false, false);
                     entity1.setDead();
                 }
                 if (!(entity1 instanceof EntityLivingBase) || !entity1.isEntityAlive() || entity1 == entityLiving) continue;

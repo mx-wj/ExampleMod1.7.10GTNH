@@ -51,7 +51,7 @@ extends EntityFireball {
             if (movingObject.entityHit != null) {
                 movingObject.entityHit.attackEntityFrom(DamageSource.causeFireballDamage((EntityFireball)this, (Entity)this.shootingEntity), f);
                 boolean flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-                this.worldObj.newExplosion((Entity)null, this.posX, this.posY, this.posZ, 7.0f, true, flag);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)null, this.posX, this.posY, this.posZ, 7.0f, true, flag);
             } else {
                 this.playSound("random.explode", 4.0f, (1.0f + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2f) * 0.7f);
             }
@@ -65,7 +65,7 @@ extends EntityFireball {
         this.setFire(4);
         if (this.ticksExisted % 600 == 0) {
             boolean flag = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-            this.worldObj.newExplosion((Entity)null, this.posX, this.posY, this.posZ, 7.0f, true, flag);
+            net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)null, this.posX, this.posY, this.posZ, 7.0f, true, flag);
             this.setDead();
         }
         if (this.rand.nextInt(30) == 0) {

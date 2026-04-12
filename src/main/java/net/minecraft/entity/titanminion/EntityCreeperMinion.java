@@ -289,7 +289,7 @@ ITemplar {
 
     @Override
     public void TransformEntity(Entity entity) {
-        entity.worldObj.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 18.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+        net.minecraft.theTitans.util.FastExplosion.newExplosion(entity.worldObj, entity, entity.posX, entity.posY, entity.posZ, 18.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
         EntityCreeperTitan entitytitan = new EntityCreeperTitan(entity.worldObj);
         entitytitan.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, 0.0f);
         entity.setDead();
@@ -553,25 +553,25 @@ ITemplar {
             switch (this.getMinionTypeInt()) {
                 case 1: {
                     float f = this.getPowered() ? 2.5f : 1.25f;
-                    this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     this.setDead();
                     break;
                 }
                 case 2: {
                     float f = this.getPowered() ? 4.0f : 2.0f;
-                    this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     this.setDead();
                     break;
                 }
                 case 3: {
                     float f = this.getPowered() ? 10.0f : 5.0f;
-                    this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     this.setDead();
                     break;
                 }
                 default: {
                     float f = this.getPowered() ? 2.0f : 1.0f;
-                    this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                    net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                     this.setDead();
                     break;
                 }
@@ -734,7 +734,7 @@ ITemplar {
             TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.nearbyScan", perfNearbyNs);
             TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.nearbyEntities", list11 == null ? 0 : list11.size());
             if (!this.worldObj.isRemote && list11 != null && !list11.isEmpty() && this.ticksExisted % (this.getHealth() < this.getMaxHealth() / 2.0f ? 40 : 160) == 0) {
-                this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
+                net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
                 for (int i1 = 0; i1 < list11.size(); ++i1) {
                     Entity entity = (Entity)list11.get(i1);
                     if (entity == null || !(entity instanceof EntityLivingBase) || !this.canAttackClass(entity.getClass())) continue;
@@ -882,7 +882,7 @@ ITemplar {
                     break;
                 }
                 case 3: {
-                    this.worldObj.newExplosion((Entity)this, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ, 1.0f * p_82196_1_.width, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ, 1.0f * p_82196_1_.width, false, false);
                     p_82196_1_.attackEntityFrom(DamageSourceExtra.lightningBolt, 49.0f);
                     this.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.worldObj, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ));
                     break;

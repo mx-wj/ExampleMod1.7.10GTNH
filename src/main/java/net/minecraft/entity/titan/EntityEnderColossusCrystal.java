@@ -106,7 +106,7 @@ implements IMinion {
             }
             this.setDead();
             if (!this.worldObj.isRemote) {
-                this.worldObj.createExplosion((Entity)null, this.posX, this.posY, this.posZ, 6.0f, true);
+                net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)null, this.posX, this.posY, this.posZ, 6.0f, true);
             }
         }
     }

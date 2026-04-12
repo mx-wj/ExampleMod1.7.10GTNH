@@ -148,7 +148,7 @@ extends EntityFireball {
                         }
                     }
                 }
-                this.worldObj.newExplosion((Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY + 3.0, this.posZ, 8.0f, true, false);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)(this.shootingEntity != null ? this.shootingEntity : this), this.posX, this.posY + 3.0, this.posZ, 8.0f, true, false);
             }
             this.setDead();
         }

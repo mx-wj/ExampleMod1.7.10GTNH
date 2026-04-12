@@ -53,7 +53,7 @@ extends EntitySnowball {
         }
         this.playSound("random.explode", 0.5f, 1.0f + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.5f);
         if (!this.worldObj.isRemote) {
-            this.worldObj.createExplosion((Entity)(this.getThrower() != null ? this.getThrower() : this), this.posX, this.posY, this.posZ, 3.0f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+            net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)(this.getThrower() != null ? this.getThrower() : this), this.posX, this.posY, this.posZ, 3.0f, this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
         }
         this.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.worldObj, this.posX, this.posY + 1.0, this.posZ));
         this.setDead();

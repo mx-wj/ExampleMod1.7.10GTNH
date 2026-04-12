@@ -406,7 +406,7 @@ implements IRangedAttackMob {
         this.worldObj.setBlock(i, j, k, Blocks.bedrock);
         if (!this.worldObj.isRemote) {
             this.playSound("thetitans:turretDeath", 6.0f, 1.0f);
-            this.worldObj.createExplosion((Entity)null, this.posX, this.posY - 1.0, this.posZ, 2.0f, true);
+            net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)null, this.posX, this.posY - 1.0, this.posZ, 2.0f, true);
         }
     }
 

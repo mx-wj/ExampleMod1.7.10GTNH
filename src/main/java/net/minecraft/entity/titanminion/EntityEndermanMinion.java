@@ -517,7 +517,7 @@ ITemplar {
             }
             List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(8.0, 8.0, 8.0));
             if (!this.worldObj.isRemote && list11 != null && !list11.isEmpty() && this.ticksExisted % (this.getHealth() < this.getMaxHealth() / 2.0f ? 40 : 160) == 0) {
-                this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
+                net.minecraft.theTitans.util.FastExplosion.createExplosion(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
                 for (int i1 = 0; i1 < list11.size(); ++i1) {
                     Entity entity = (Entity)list11.get(i1);
                     if (entity == null || !(entity instanceof EntityLivingBase) || !this.canAttackClass(entity.getClass())) continue;
@@ -595,11 +595,11 @@ ITemplar {
                 this.setFire(1);
             }
             if ((this.rand.nextInt(60) == 0 || this.rand.nextInt(10) == 0 && this.getHealth() <= 15.0f) && !this.worldObj.isRemote) {
-                this.worldObj.newExplosion((Entity)this, this.posX + (this.rand.nextDouble() * 1.0 - 0.5), this.posY + this.rand.nextDouble() * 3.0, this.posZ + (this.rand.nextDouble() * 1.0 - 0.5), 0.0f, true, true);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX + (this.rand.nextDouble() * 1.0 - 0.5), this.posY + this.rand.nextDouble() * 3.0, this.posZ + (this.rand.nextDouble() * 1.0 - 0.5), 0.0f, true, true);
             }
             if ((this.rand.nextInt(1000) == 0 || this.getHealth() <= 1.0f) && !this.worldObj.isRemote) {
                 this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
-                this.worldObj.newExplosion((Entity)this, this.posX, this.posY + 1.0, this.posZ, 2.0f, true, true);
+                net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, this.posX, this.posY + 1.0, this.posZ, 2.0f, true, true);
                 this.motionY += 3.0;
                 this.attackEntityFrom(DamageSource.onFire, Float.MAX_VALUE);
             }
@@ -1038,7 +1038,7 @@ ITemplar {
 
     @Override
     public void TransformEntity(Entity entity) {
-        entity.worldObj.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 45.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+        net.minecraft.theTitans.util.FastExplosion.newExplosion(entity.worldObj, entity, entity.posX, entity.posY, entity.posZ, 45.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
         EntityEnderColossus entitytitan = new EntityEnderColossus(entity.worldObj);
         entitytitan.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, 0.0f);
         entity.setDead();
@@ -1056,7 +1056,7 @@ ITemplar {
         } else {
             switch (this.rand.nextInt(5)) {
                 case 0: {
-                    this.worldObj.newExplosion((Entity)this, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ, 1.0f * p_82196_1_.width, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ, 1.0f * p_82196_1_.width, false, false);
                     p_82196_1_.attackEntityFrom(DamageSourceExtra.lightningBolt, 49.0f);
                     this.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.worldObj, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ));
                     break;
@@ -1105,7 +1105,7 @@ ITemplar {
                     break;
                 }
                 case 4: {
-                    this.worldObj.newExplosion((Entity)this, p_82196_1_.posX, p_82196_1_.posY + 1.0, p_82196_1_.posZ, 2.0f, false, false);
+                    net.minecraft.theTitans.util.FastExplosion.newExplosion(this.worldObj, (Entity)this, p_82196_1_.posX, p_82196_1_.posY + 1.0, p_82196_1_.posZ, 2.0f, false, false);
                     p_82196_1_.attackEntityFrom(DamageSourceExtra.lightningBolt, 100.0f);
                     this.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.worldObj, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ));
                     this.worldObj.addWeatherEffect((Entity)new EntityLightningBolt(this.worldObj, p_82196_1_.posX, p_82196_1_.posY, p_82196_1_.posZ));

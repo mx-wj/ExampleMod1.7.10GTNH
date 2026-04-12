@@ -47,6 +47,7 @@ package net.minecraft.entity.titanminion;
 import net.minecraft.theTitans.perf.PerfSection;
 import net.minecraft.theTitans.perf.TitansPerf;
 import net.minecraft.theTitans.util.TitanOptimizationHelper;
+import net.minecraft.theTitans.util.FastExplosion;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -759,12 +760,12 @@ ITemplar {
                         List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(8.0, 8.0, 8.0));
                         TitansPerf.endWarn(PerfSection.TARGET_SCAN, this.getClass().getSimpleName() + "#onLivingUpdate.nearbyScan", perfNearbyNs);
                         TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.nearbyEntities", list11 == null ? 0 : list11.size());
-                        if (!this.worldObj.isRemote && list11 != null && !list11.isEmpty() && (this.ticksExisted + this.getEntityId()) % (this.getHealth() < this.getMaxHealth() / 2.0f ? 40 : 160) == 0) {
-                            this.worldObj.createExplosion((Entity)this, this.posX, this.posY, this.posZ, 8.0f, false);
+                        if (!this.worldObj.isRemote && list11 != null && !list11.isEmpty() && list11.size() <= 12 && (this.ticksExisted + this.getEntityId()) % (this.getHealth() < this.getMaxHealth() / 2.0f ? 80 : 200) == 0) {
+                            FastExplosion.explodeLight(this.worldObj, (Entity)this, this.posX, this.posY, this.posZ, 4.5f, 10.0f, 12);
                             for (int i1 = 0; i1 < list11.size(); ++i1) {
                                 Entity entity = (Entity)list11.get(i1);
                                 if (entity == null || !(entity instanceof EntityLivingBase) || !this.canAttackClass(entity.getClass())) continue;
-                                entity.motionY += this.rand.nextDouble();
+                                entity.motionY += this.rand.nextDouble() * 0.35;
                                 ((EntityLivingBase)entity).addPotionEffect(new PotionEffect(ClientProxy.electricJudgment.id, 10, 1));
                                 this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1017, (int)entity.posX, (int)entity.posY, (int)entity.posZ, 0);
                             }
@@ -960,7 +961,7 @@ ITemplar {
 
     @Override
     public void TransformEntity(Entity entity) {
-        entity.worldObj.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 18.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+        net.minecraft.theTitans.util.FastExplosion.newExplosion(entity.worldObj, entity, entity.posX, entity.posY, entity.posZ, 18.0f, true, entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
         EntityZombieTitan entitytitan = new EntityZombieTitan(entity.worldObj);
         entitytitan.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, 0.0f);
         entitytitan.onSpawnWithEgg(null);
