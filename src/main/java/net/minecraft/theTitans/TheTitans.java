@@ -68,6 +68,8 @@ import net.minecraft.theTitans.world.WorldProviderNowhere;
 import net.minecraft.theTitans.world.WorldProviderVoid;
 import net.minecraft.theTitans.perf.TitansPerf;
 import net.minecraft.theTitans.perf.TitansPerfTicker;
+import net.minecraft.theTitans.debug.ServerHeartbeatTicker;
+import net.minecraft.theTitans.debug.TitansWatchdog;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -125,6 +127,7 @@ public class TheTitans {
     public static boolean TotalDestructionMode;
     public static boolean TitansFFAMode;
     private static final TitansPerfTicker PERF_TICKER = new TitansPerfTicker();
+    private static final ServerHeartbeatTicker HEARTBEAT_TICKER = new ServerHeartbeatTicker();
     public static final EnumRarity godly;
 
     @Mod.EventHandler
@@ -158,6 +161,10 @@ public class TheTitans {
         TitansPerf.LOG_SLOW_CALLS = config.get("perf", "Log Slow Calls", true).getBoolean(true);
         TitansPerf.DUMP_INTERVAL_TICKS = config.get("perf", "Dump Interval Ticks", 200).getInt(200);
         TitansPerf.SLOW_CALL_NS = (long)(config.get("perf", "Slow Call Warn Ms", 5.0).getDouble(5.0) * 1000000.0);
+        TitansWatchdog.ENABLED = config.get("watchdog", "Enable Titans Watchdog", true).getBoolean(true);
+        TitansWatchdog.STALL_THRESHOLD_MS = (long)config.get("watchdog", "Watchdog Stall Threshold Ms", 10000).getInt(10000);
+        TitansWatchdog.CHECK_INTERVAL_MS = (long)config.get("watchdog", "Watchdog Check Interval Ms", 1000).getInt(1000);
+        TitansWatchdog.DUMP_COOLDOWN_MS = (long)config.get("watchdog", "Watchdog Dump Cooldown Ms", 5000).getInt(5000);
         config.save();
         this.logger.debug("Finished pre-init for The Titans!");
         DimensionManager.registerProviderType((int)200, WorldProviderVoid.class, (boolean)false);
@@ -174,9 +181,14 @@ public class TheTitans {
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
         proxy.init(e);
+        FMLCommonHandler.instance().bus().register((Object)HEARTBEAT_TICKER);
         if (TitansPerf.ENABLED) {
             FMLCommonHandler.instance().bus().register((Object)PERF_TICKER);
             this.logger.info("TitansPerf enabled: dumpInterval={} ticks slowWarnMs={}", new Object[]{TitansPerf.DUMP_INTERVAL_TICKS, (double)TitansPerf.SLOW_CALL_NS / 1000000.0});
+        }
+        if (TitansWatchdog.ENABLED) {
+            TitansWatchdog.start();
+            this.logger.info("TitansWatchdog enabled: threshold={}ms check={}ms cooldown={}ms", new Object[]{TitansWatchdog.STALL_THRESHOLD_MS, TitansWatchdog.CHECK_INTERVAL_MS, TitansWatchdog.DUMP_COOLDOWN_MS});
         }
         proxy.registerRenders();
         this.logger.debug("Initialization started!");
