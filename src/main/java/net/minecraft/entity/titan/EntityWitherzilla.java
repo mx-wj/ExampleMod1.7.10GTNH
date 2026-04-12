@@ -92,6 +92,7 @@ import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityWitherSkull;
+import net.minecraft.entity.titanminion.EntityWitherMinion;
 import net.minecraft.entity.titan.EntityEnderColossus;
 import net.minecraft.entity.titan.EntityEnderColossusCrystal;
 import net.minecraft.entity.titan.EntityGammaLightning;
