@@ -99,6 +99,8 @@ IMinion {
     private int[] field_82224_i = new int[2];
     private int blockBreakCounter;
     public EntityLiving master;
+    private int titanMasterSearchCooldown;
+    private int titanHurtCallCooldown;
 
     public EntityWitherMinion(World worldIn) {
         super(worldIn);
@@ -175,9 +177,11 @@ IMinion {
         double d5;
         double d1;
         Entity entity;
-        if (this.isEntityAlive() && this.master == null) {
-            float f = 256.0f;
-            List<EntitySkeletonTitan> list = this.worldObj.getEntitiesWithinAABB(EntitySkeletonTitan.class, this.boundingBox.expand((double)f, (double)f, (double)f));
+        if (this.isEntityAlive() && this.master == null && --this.titanMasterSearchCooldown <= 0) {
+            this.titanMasterSearchCooldown = 60;
+            float fx = 96.0f;
+            float fy = 64.0f;
+            List<EntitySkeletonTitan> list = this.worldObj.getEntitiesWithinAABB(EntitySkeletonTitan.class, this.boundingBox.expand((double)fx, (double)fy, (double)fx));
             EntitySkeletonTitan entityendercrystal = null;
             double d0 = Double.MAX_VALUE;
             for (EntitySkeletonTitan entityendercrystal1 : list) {
@@ -281,13 +285,22 @@ IMinion {
             if (this.master.getAttackTarget() != null) {
                 this.setAttackTarget(this.master.getAttackTarget());
             }
-        } else {
-            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(256.0, 256.0, 256.0));
+        } else if (--this.titanMasterSearchCooldown <= 0) {
+            this.titanMasterSearchCooldown = 60;
+            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 64.0, 96.0));
             if (list != null && !list.isEmpty()) {
+                double nearest = Double.MAX_VALUE;
+                EntitySkeletonTitan nearestMaster = null;
                 for (i1 = 0; i1 < list.size(); ++i1) {
                     entity = (Entity)list.get(i1);
                     if (entity == null || !(entity instanceof EntitySkeletonTitan) || ((EntitySkeletonTitan)entity).getSkeletonType() != 1) continue;
-                    this.master = (EntitySkeletonTitan)entity;
+                    double dMaster = this.getDistanceSqToEntity(entity);
+                    if (!(dMaster < nearest)) continue;
+                    nearest = dMaster;
+                    nearestMaster = (EntitySkeletonTitan)entity;
+                }
+                if (nearestMaster != null) {
+                    this.master = nearestMaster;
                 }
             }
         }
@@ -492,16 +505,18 @@ IMinion {
             }
             entity = source.getEntity();
             if (entity instanceof EntityLivingBase) {
-                List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(256.0, 256.0, 256.0));
-                for (int i2 = 0; i2 < list.size(); ++i2) {
-                    Entity entity1 = (Entity)list.get(i2);
-                    if (entity1 instanceof EntityWitherMinion) {
+                this.setAttackTarget((EntityLivingBase)entity);
+                this.setRevengeTarget((EntityLivingBase)entity);
+                if (--this.titanHurtCallCooldown <= 0) {
+                    this.titanHurtCallCooldown = 40;
+                    List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 64.0, 96.0));
+                    for (int i2 = 0; i2 < list.size(); ++i2) {
+                        Entity entity1 = (Entity)list.get(i2);
+                        if (!(entity1 instanceof EntityWitherMinion)) continue;
                         EntityWitherMinion entitypigzombie = (EntityWitherMinion)entity1;
                         entitypigzombie.setAttackTarget((EntityLivingBase)entity);
                         entitypigzombie.setRevengeTarget((EntityLivingBase)entity);
                     }
-                    this.setAttackTarget((EntityLivingBase)entity);
-                    this.setRevengeTarget((EntityLivingBase)entity);
                 }
             }
             return super.attackEntityFrom(source, amount);

@@ -122,6 +122,7 @@ public class EntityCreeperTitan
 extends EntityTitan
 implements IAnimatedEntity,
 IEntityMultiPartTitan {
+    private int titanHurtCallCooldown;
     public int damageToLegs;
     private int lastActiveTime;
     private int timeSinceIgnited;
@@ -673,7 +674,7 @@ IEntityMultiPartTitan {
             }
         }
         long perfRange100Ns = TitansPerf.begin();
-        if ((list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(100.0, 100.0, 100.0))) != null && !list.isEmpty() && this.ticksExisted % 20 == 0) {
+        if ((list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(64.0, 48.0, 64.0))) != null && !list.isEmpty() && (this.ticksExisted + this.getEntityId()) % 40 == 0) {
             TitansPerf.count(this.getClass().getSimpleName() + "#onLivingUpdate.range100Entities", list.size());
             for (int i1 = 0; i1 < list.size(); ++i1) {
                 Entity entity = (Entity)list.get(i1);
@@ -1108,16 +1109,18 @@ IEntityMultiPartTitan {
         this.recentlyHit = 200;
         Entity entity = source.getEntity();
         if (entity instanceof EntityLivingBase && !this.isEntityInvulnerable() && amount > 25.0f) {
-            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(256.0, 256.0, 256.0));
-            for (int i = 0; i < list.size(); ++i) {
-                Entity entity1 = (Entity)list.get(i);
-                if (entity1 instanceof EntityCreeperTitan) {
+            this.setAttackTarget((EntityLivingBase)entity);
+            this.setRevengeTarget((EntityLivingBase)entity);
+            if (--this.titanHurtCallCooldown <= 0) {
+                this.titanHurtCallCooldown = 60;
+                List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(128.0, 96.0, 128.0));
+                for (int i = 0; i < list.size(); ++i) {
+                    Entity entity1 = (Entity)list.get(i);
+                    if (!(entity1 instanceof EntityCreeperTitan)) continue;
                     EntityCreeperTitan entitypigzombie = (EntityCreeperTitan)entity1;
                     entitypigzombie.setAttackTarget((EntityLivingBase)entity);
                     entitypigzombie.setRevengeTarget((EntityLivingBase)entity);
                 }
-                this.setAttackTarget((EntityLivingBase)entity);
-                this.setRevengeTarget((EntityLivingBase)entity);
             }
         }
         return super.attackEntityFrom(source, amount);

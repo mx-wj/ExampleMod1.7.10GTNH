@@ -127,6 +127,8 @@ ITemplar {
     private boolean isAggressive;
     public EntityLiving master;
     public int randomSoundDelay;
+    private int titanMasterSearchCooldown;
+    private int titanHurtCallCooldown;
     private static IdentityHashMap<Block, Boolean> carriable;
     public EntityLiving entityToHeal;
     private int attackPattern;
@@ -651,13 +653,22 @@ ITemplar {
                     this.getLookHelper().setLookPositionWithEntity((Entity)this.master.getAttackTarget(), 10.0f, 40.0f);
                 }
             }
-        } else {
-            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(256.0, 256.0, 256.0));
+        } else if (--this.titanMasterSearchCooldown <= 0) {
+            this.titanMasterSearchCooldown = 60;
+            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(96.0, 64.0, 96.0));
             if (list != null && !list.isEmpty()) {
+                double nearest = Double.MAX_VALUE;
+                EntityEnderColossus nearestMaster = null;
                 for (int i1 = 0; i1 < list.size(); ++i1) {
                     Entity entity = (Entity)list.get(i1);
                     if (entity == null || !(entity instanceof EntityEnderColossus)) continue;
-                    this.master = (EntityEnderColossus)entity;
+                    double dMaster = this.getDistanceSqToEntity(entity);
+                    if (!(dMaster < nearest)) continue;
+                    nearest = dMaster;
+                    nearestMaster = (EntityEnderColossus)entity;
+                }
+                if (nearestMaster != null) {
+                    this.master = nearestMaster;
                 }
             }
         }
@@ -987,18 +998,20 @@ ITemplar {
             this.teleportRandomly();
         }
         if ((entity = source.getEntity()) instanceof EntityLivingBase) {
-            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(64.0, 64.0, 64.0));
-            for (int i = 0; i < list.size(); ++i) {
-                Entity entity1 = (Entity)list.get(i);
-                if (entity1 instanceof EntityEndermanMinion) {
+            this.setAttackTarget((EntityLivingBase)entity);
+            this.setRevengeTarget((EntityLivingBase)entity);
+            this.randomSoundDelay = this.rand.nextInt(40);
+            if (--this.titanHurtCallCooldown <= 0) {
+                this.titanHurtCallCooldown = 40;
+                List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(64.0, 32.0, 64.0));
+                for (int i = 0; i < list.size(); ++i) {
+                    Entity entity1 = (Entity)list.get(i);
+                    if (!(entity1 instanceof EntityEndermanMinion)) continue;
                     EntityEndermanMinion entitypigzombie = (EntityEndermanMinion)entity1;
                     entitypigzombie.setAttackTarget((EntityLivingBase)entity);
                     entitypigzombie.setRevengeTarget((EntityLivingBase)entity);
                     entitypigzombie.randomSoundDelay = this.rand.nextInt(40);
                 }
-                this.setAttackTarget((EntityLivingBase)entity);
-                this.setRevengeTarget((EntityLivingBase)entity);
-                this.randomSoundDelay = this.rand.nextInt(40);
             }
         }
         return flag;

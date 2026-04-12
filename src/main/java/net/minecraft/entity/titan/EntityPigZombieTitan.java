@@ -119,6 +119,7 @@ IEntityMultiPartTitan {
     public EntityTitanPart leftArm;
     public EntityTitanPart rightLeg;
     public EntityTitanPart leftLeg;
+    private int titanHurtCallCooldown;
 
     public EntityPigZombieTitan(World worldIn) {
         super(worldIn);
@@ -1070,16 +1071,18 @@ IEntityMultiPartTitan {
         }
         Entity entity = source.getEntity();
         if (entity instanceof EntityLivingBase && !this.isEntityInvulnerable() && amount > 25.0f) {
-            List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(256.0, 256.0, 256.0));
-            for (int i = 0; i < list.size(); ++i) {
-                Entity entity1 = (Entity)list.get(i);
-                if (entity1 instanceof EntityPigZombieTitan) {
+            this.setAttackTarget((EntityLivingBase)entity);
+            this.setRevengeTarget((EntityLivingBase)entity);
+            if (--this.titanHurtCallCooldown <= 0) {
+                this.titanHurtCallCooldown = 60;
+                List list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)this, this.boundingBox.expand(128.0, 96.0, 128.0));
+                for (int i = 0; i < list.size(); ++i) {
+                    Entity entity1 = (Entity)list.get(i);
+                    if (!(entity1 instanceof EntityPigZombieTitan)) continue;
                     EntityPigZombieTitan entitypigzombie = (EntityPigZombieTitan)entity1;
                     entitypigzombie.setAttackTarget((EntityLivingBase)entity);
                     entitypigzombie.setRevengeTarget((EntityLivingBase)entity);
                 }
-                this.setAttackTarget((EntityLivingBase)entity);
-                this.setRevengeTarget((EntityLivingBase)entity);
             }
         }
         return super.attackEntityFrom(source, amount);
