@@ -633,12 +633,10 @@ ITemplar {
                         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(3.0);
                         this.experienceValue = 7;
                     }
-                    boolean runFullLivingTick = this.getAttackTarget() != null || this.master != null || TitanOptimizationHelper.shouldRunHeavyAI(this, 1, 2, 48.0);
+                    boolean runFullLivingTick = TitanOptimizationHelper.shouldRunHeavyAI(this, 2, 4, 48.0);
                     if (this.isEntityAlive() || this.getMinionTypeInt() != 4) {
                         long perfSuperNs = TitansPerf.begin();
                         if (runFullLivingTick) {
-                            super.onLivingUpdate();
-                        } else if (((this.ticksExisted + this.getEntityId()) & 1) == 0) {
                             super.onLivingUpdate();
                         }
                         TitansPerf.endWarn(PerfSection.ENTITY_TICK, this.getClass().getSimpleName() + "#onLivingUpdate.super", perfSuperNs);
@@ -865,7 +863,7 @@ ITemplar {
         if (this.isCollidedHorizontally && this.master != null) {
             this.motionY = 0.2;
         }
-        boolean runHeavyAI = this.getAttackTarget() != null || this.master != null || TitanOptimizationHelper.shouldRunHeavyAI(this, 2, 6, 48.0);
+        boolean runHeavyAI = TitanOptimizationHelper.shouldRunHeavyAI(this, 2, 6, 48.0);
         long perfSuperAiNs = TitansPerf.begin();
         if (runHeavyAI) {
             super.updateAITasks();
