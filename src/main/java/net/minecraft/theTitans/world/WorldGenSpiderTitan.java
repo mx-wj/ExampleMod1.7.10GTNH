@@ -15,8 +15,10 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.titan.EntitySpiderTitan;
+import net.minecraft.entity.titan.EntityTitan;
 import net.minecraft.init.Blocks;
 import net.minecraft.theTitans.TheTitans;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -35,8 +37,11 @@ extends WorldGenerator {
         } else if (worldIn.getBlock(x, y, z).isOpaqueCube()) {
             ++y;
         } else if (!worldIn.isRemote && worldIn.isAirBlock(x, y, z) && worldIn.getBlock(x, y - 1, z).isOpaqueCube() && rng.nextInt(30) == 0) {
+            AxisAlignedBB nearbyBox = AxisAlignedBB.getBoundingBox((double)x - 96.0, (double)y - 48.0, (double)z - 96.0, (double)x + 96.0, (double)y + 48.0, (double)z + 96.0);
+            if (!worldIn.getEntitiesWithinAABB(EntityTitan.class, nearbyBox).isEmpty()) {
+                return false;
+            }
             EntitySpiderTitan entityomegafish = new EntitySpiderTitan(worldIn);
-            entityomegafish.destroyBlocksInAABBGriefingBypass(entityomegafish.boundingBox);
             entityomegafish.onSpawnWithEgg(null);
             entityomegafish.setLocationAndAngles((float)x + 0.5f, y, (float)z + 0.5f, rng.nextFloat() * 360.0f, 0.0f);
             worldIn.spawnEntityInWorld((Entity)entityomegafish);
